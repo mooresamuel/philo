@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 18:18:19 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/02 20:35:47 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/02 20:43:53 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,14 @@
 #include <unistd.h>
 #include <stdatomic.h>
 #include <sys/time.h>
+
+typedef enum {
+	THINKING,
+	EATING,
+	SLEEPING,
+	TAKEN_FORK,
+	DIED
+}	e_philo_state;
 
 typedef struct s_philos{
 	pthread_mutex_t	*forks;
@@ -43,15 +51,19 @@ int	print_time(int start_time)
 	return (elapsed_time);
 }
 
-void	lock_print(t_philos *philo, char *action, int alt)
+void	lock_print(t_philos *philo, e_philo_state state)
 {
 	pthread_mutex_lock(philo->print_lock);
 	if (!*(philo->dead))
 	{
 		print_time(philo->start_time);
-		if (!alt)
-			printf("philo %d is %s\n", philo->philo, action); 
-		else if (alt == 1)
+		if (state == EATING)
+			printf("philo %d is eating\n", philo->philo);
+		else if (state == SLEEPING)
+			printf("philo %d is sleeping\n", philo->philo);
+		else if (state == THINKING)
+			printf("philo %d is thinking\n", philo->philo);
+		else if (state == TAKEN_FORK)
 			printf("philo %d has taken a fork\n", philo->philo); 
 		else
 			printf("philo %d has died\n", philo->philo);
@@ -80,16 +92,16 @@ void *new_philosopher(void *arg)
 
 	while (!*(philo->dead))
 	{
-		lock_print(philo, "thinking", 0);
+		lock_print(philo, THINKING);
 		pthread_mutex_lock(&philo->forks[first_fork]);
-		lock_print(philo, "", 1);
+		lock_print(philo, TAKEN_FORK);
 		pthread_mutex_lock(&philo->forks[second_fork]); 		
-		lock_print(philo, "eating", 0);
+		lock_print(philo, EATING);
 		if (count == 6 && philo->philo == 3)
 		{
 			pthread_mutex_unlock(&philo->forks[first_fork]);
 			pthread_mutex_unlock(&philo->forks[second_fork]);
-			lock_print(philo, "", 2);
+			lock_print(philo, DIED);
 			*philo->dead = 1;
 			return NULL;
 		}	
@@ -97,7 +109,7 @@ void *new_philosopher(void *arg)
 		pthread_mutex_unlock(&philo->forks[first_fork]);
 		pthread_mutex_unlock(&philo->forks[second_fork]); 
 		usleep(philo->think_time);
-		lock_print(philo, "sleeping", 0);
+		lock_print(philo, SLEEPING);
 		usleep(philo->sleep_time);
 		count++;
 	}
