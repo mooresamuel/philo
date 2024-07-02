@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 18:18:19 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/02 20:43:53 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/02 20:47:02 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ typedef struct s_philos{
 	int				philo;
 	int				num_philos;
 	int				eat_time;
-	int				think_time;
 	int				sleep_time;
 	int				times_to_eat;
 	int				last_meal;
@@ -108,7 +107,6 @@ void *new_philosopher(void *arg)
 		usleep(philo->eat_time);
 		pthread_mutex_unlock(&philo->forks[first_fork]);
 		pthread_mutex_unlock(&philo->forks[second_fork]); 
-		usleep(philo->think_time);
 		lock_print(philo, SLEEPING);
 		usleep(philo->sleep_time);
 		count++;
@@ -141,7 +139,6 @@ t_philos	*init_philos(int num_philos, pthread_mutex_t *forks, pthread_mutex_t *p
 	t_philos		*philos;
 
 	int	eat = 410000;
-	int think = 200000;
 	int sleep = 200000;
 
 	philos = malloc(sizeof(t_philos) * num_philos);
@@ -155,7 +152,6 @@ t_philos	*init_philos(int num_philos, pthread_mutex_t *forks, pthread_mutex_t *p
 		philos[i].philo = i;
 		philos[i].eat_time = eat;
 		philos[i].sleep_time = sleep;
-		philos[i].think_time = think;
 		philos[i].print_lock = print_lock;
 		philos[i].dead = dead;
 		philos[i].start_time = start_time;
