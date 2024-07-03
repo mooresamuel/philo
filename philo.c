@@ -6,47 +6,21 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 18:18:19 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/02 20:47:02 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/03 21:06:10 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <pthread.h> 
-#include <stdio.h> 
-#include <stdlib.h> 
-#include <string.h> 
-#include <unistd.h>
-#include <stdatomic.h>
-#include <sys/time.h>
+#include <philo.h>
 
-typedef enum {
-	THINKING,
-	EATING,
-	SLEEPING,
-	TAKEN_FORK,
-	DIED
-}	e_philo_state;
-
-typedef struct s_philos{
-	pthread_mutex_t	*forks;
-	pthread_mutex_t	*print_lock;
-	atomic_int		*dead;
-	int				philo;
-	int				num_philos;
-	int				eat_time;
-	int				sleep_time;
-	int				times_to_eat;
-	int				last_meal;
-	int				start_time;
-}					t_philos;
-
-int	print_time(int start_time)
+int	get_time_since(int start_time, int silent)
 {
 	struct	timeval time;
 	int		elapsed_time;
 
 	gettimeofday(&time, NULL);
-	elapsed_time = time.tv_sec * 1000 + time.tv_usec / 1000 - start_time;
-	printf("%d ", elapsed_time);
+	elapsed_time = (time.tv_sec * 1000 + time.tv_usec / 1000) - start_time;
+	if (!silent)
+		printf("%d ", elapsed_time);
 	return (elapsed_time);
 }
 
@@ -55,7 +29,7 @@ void	lock_print(t_philos *philo, e_philo_state state)
 	pthread_mutex_lock(philo->print_lock);
 	if (!*(philo->dead))
 	{
-		print_time(philo->start_time);
+		get_time_since(philo->start_time, 0);
 		if (state == EATING)
 			printf("philo %d is eating\n", philo->philo);
 		else if (state == SLEEPING)
@@ -70,114 +44,82 @@ void	lock_print(t_philos *philo, e_philo_state state)
 	pthread_mutex_unlock(philo->print_lock);
 }
 
+void	*start_timer(void *arg)
+{
+	t_philos	**philo;
+	int			time_left;
+
+	philo = arg;
+	pthread_mutex_lock(&(*philo)->struct_lock);
+	time_left = (*philo)->time_left * 1000;
+	pthread_mutex_unlock(&(*philo)->struct_lock);	
+	usleep(time_left);
+	pthread_mutex_lock(&(*philo)->struct_lock);
+	if ((*philo)->eaten)
+	{
+		pthread_mutex_unlock(&(*philo)->struct_lock);	
+		return (NULL);
+	}
+	lock_print(*philo, DIED);
+	*((*philo)->dead) = 1;
+	pthread_mutex_unlock(&(*philo)->struct_lock);	
+	return (NULL);
+}
+
 void *new_philosopher(void *arg) 
 {
 	t_philos *philo;
-	int	first_fork;
-	int	second_fork;
-	int count = 0;
+	pthread_t timer;
+	int time_since_last = 0;
 
 	philo = arg;
-	if (philo->philo < (philo->philo + 1) % philo->num_philos)
-	{
-		first_fork = philo->philo;
-		second_fork = (philo->philo + 1) % philo->num_philos;
-	}
-	else
-	{
-		first_fork = 0;
-		second_fork = philo->philo;
-	}
-
+	if (philo->philo % 2 == 1)
+		usleep(1000);
 	while (!*(philo->dead))
 	{
-		lock_print(philo, THINKING);
-		pthread_mutex_lock(&philo->forks[first_fork]);
+		timer = 0;
+		pthread_mutex_lock(&philo->struct_lock);
+		philo->eaten = 0;
+		time_since_last = get_time_since(philo->last_meal, 1);
+		philo->time_left = (philo->die_time);
+		pthread_create(&timer, NULL, &start_timer, (void*)&philo);
+		pthread_mutex_unlock(&philo->struct_lock);	
+		// lock_print(philo, THINKING);
+		pthread_mutex_lock(&philo->forks[philo->first_fork]);
 		lock_print(philo, TAKEN_FORK);
-		pthread_mutex_lock(&philo->forks[second_fork]); 		
+		pthread_mutex_lock(&philo->forks[philo->second_fork]);
+		pthread_mutex_lock(&philo->struct_lock);
+		philo->eaten = 1;
+		pthread_mutex_unlock(&philo->struct_lock);
 		lock_print(philo, EATING);
-		if (count == 6 && philo->philo == 3)
-		{
-			pthread_mutex_unlock(&philo->forks[first_fork]);
-			pthread_mutex_unlock(&philo->forks[second_fork]);
-			lock_print(philo, DIED);
-			*philo->dead = 1;
-			return NULL;
-		}	
-		usleep(philo->eat_time);
-		pthread_mutex_unlock(&philo->forks[first_fork]);
-		pthread_mutex_unlock(&philo->forks[second_fork]); 
+		usleep(philo->eat_time * 1000);
+		pthread_mutex_lock(&philo->struct_lock);
+		philo->last_meal = get_time_since(philo->start_time, 1);
+		pthread_mutex_unlock(&philo->struct_lock);
+		pthread_mutex_unlock(&philo->forks[philo->first_fork]);
+		pthread_mutex_unlock(&philo->forks[philo->second_fork]); 
 		lock_print(philo, SLEEPING);
-		usleep(philo->sleep_time);
-		count++;
+		usleep(philo->sleep_time * 1000);
+		pthread_join(timer, NULL);
 	}
     return NULL; 
 } 
-
-pthread_mutex_t	*init_forks(int num_philos)
-{
-	pthread_mutex_t	*forks;
-	int				i;
-
-	forks = malloc(sizeof(pthread_mutex_t) * num_philos);
-	i = -1;
-	while (++i < num_philos)
-	{
-		if (pthread_mutex_init(&forks[i], NULL) != 0) { 
-			printf("\n mutex init has failed\n"); 
-			return NULL; 
-		}
-	}
-	return (forks);
-}
-
-t_philos	*init_philos(int num_philos, pthread_mutex_t *forks, pthread_mutex_t *print_lock, atomic_int *dead)
-{
-	struct timeval time;
-	int				start_time;
-	int				i;
-	t_philos		*philos;
-
-	int	eat = 410000;
-	int sleep = 200000;
-
-	philos = malloc(sizeof(t_philos) * num_philos);
-	gettimeofday(&time, NULL);
-	start_time = (time.tv_sec * 1000) + (time.tv_usec / 1000);
-	i = 0;
-	while (i < num_philos)
-	{
-		philos[i].forks = forks;
-		philos[i].num_philos = num_philos;
-		philos[i].philo = i;
-		philos[i].eat_time = eat;
-		philos[i].sleep_time = sleep;
-		philos[i].print_lock = print_lock;
-		philos[i].dead = dead;
-		philos[i].start_time = start_time;
-		philos[i].last_meal = 0;
-		i++;
-	}
-	return (philos);
-}
 
 int main(void) 
 { 
     int i = -1; 
     int error;
-	int num_philos = 7;
+	int num_philos = 2;
 	t_philos *philos;
-	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_lock;
 	pthread_t tid[num_philos];
 	atomic_int dead = 0;
 
-	forks = init_forks(num_philos);
 	if (pthread_mutex_init(&print_lock, NULL) != 0) { 
 		printf("\n mutex init has failed\n"); 
 		return 1; 
 	}
-	philos = init_philos(num_philos, forks, &print_lock, &dead);
+	philos = init_philos(num_philos, &print_lock, &dead);
 	i = 0;
     while (i < num_philos) 
 	{
