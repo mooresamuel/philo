@@ -6,82 +6,128 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:14:24 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/03 21:05:35 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/06 14:11:56 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philo.h>
 
-pthread_mutex_t	*init_forks(int num_philos)
+pthread_mutex_t	*get_struct_lock(int philo, int init)
 {
-	static pthread_mutex_t	*forks = NULL;
+	static pthread_mutex_t	*struct_locks = NULL;
 	int						i;
 
-	if (!forks)
+	if (init == 1)
 	{
-		forks = malloc(sizeof(pthread_mutex_t) * num_philos);
+		struct_locks = malloc(sizeof(pthread_mutex_t) * philo);
 		i = -1;
-		while (++i < num_philos)
+		while (++i < philo)
 		{
-			if (pthread_mutex_init(&forks[i], NULL) != 0) { 
+			if (pthread_mutex_init(&struct_locks[i], NULL) != 0) { 
 				printf("\n mutex init has failed\n"); 
 				return NULL; 
 			}
 		}
 	}
-	else if (num_philos == -1)
-		free (forks);
-	return (forks);
+	else if (init == -1)
+	{
+		i = -1;
+		while (++i < philo)
+			pthread_mutex_destroy(&struct_locks[i]);
+		free (struct_locks);
+	}
+	else 
+	{
+		return (&struct_locks[philo]);
+	}
+	return (NULL);
 }
 
-int	first_fork(int num_philos, int philo)
+void	*pointer_to(e_type type)
 {
-	if (philo < (philo + 1) % num_philos)
-		return (philo);
+	static pthread_mutex_t	print_lock;
+	static pthread_mutex_t	dead_lock;
+	static pthread_mutex_t	end_lock;
+
+	if (type == PRINT_LOCK)
+		return ((void*)&print_lock);
+	if (type == DEAD_LOCK)
+		return ((void*)&dead_lock);
+	if (type == END_LOCK)
+		return ((void*)&end_lock);
+	if (type == INIT)
+	{
+		if (pthread_mutex_init(&print_lock, NULL) != 0) { 
+			printf("\n mutex init has failed\n"); 
+		return NULL; 
+	}
+		if (pthread_mutex_init(&dead_lock, NULL) != 0) { 
+			printf("\n mutex init has failed\n"); 
+		return NULL; 
+	}
+		if (pthread_mutex_init(&end_lock, NULL) != 0) { 
+			printf("\n mutex init has failed\n"); 
+		return NULL; 
+	}
+	}
+	return (NULL);
+}
+
+int	my_atoi(char *str)
+{
+	int	num;
+
+	num = 0;
+	while (*str)
+	{
+		if (*str < '0' || *str > '9')
+			return (num);
+		num *= 10;
+		num += *str++ - '0';
+	}
+	return (num);
+}
+
+void	get_times(t_philos *philo, int argc, char **argv)
+{
+	philo->die_time = my_atoi(argv[2]);
+	philo->eat_time = my_atoi(argv[3]);
+	philo->sleep_time = my_atoi(argv[4]);
+	if (argc == 5)
+		philo->times_to_eat = 2147483647;
 	else
-		return (0);
+		philo->times_to_eat = my_atoi(argv[5]);
 }
 
-int second_fork(int num_philos, int philo)
+t_philos	*init_philos(int num_philos, int argc, char **argv)
 {
-	if (philo < (philo + 1) % num_philos)
-		return ((philo + 1) % num_philos);
-	else
-		return (philo);
-}
-
-t_philos	*init_philos(int num_philos, pthread_mutex_t *print_lock, atomic_int *dead)
-{
-	struct timeval	time;
-	int				start_time;
+	struct timeval		s_time;
+	long				start_time;
 	int				i;
 	t_philos		*philos;
 
-	int	eat = 200;
-	int sleep = 100;
-	int die = 198;
-
 	philos = malloc(sizeof(t_philos) * num_philos);
-	gettimeofday(&time, NULL);
-	start_time = (time.tv_sec * 1000) + (time.tv_usec / 1000);
+
+		// gettimeofday(&s_time, NULL);
+		// start_time = ((long)s_time.tv_sec * 1000) + ((long)s_time.tv_usec / 1000);
+		
+
+	pointer_to(INIT);
 	i = -1;
+	get_struct_lock(num_philos, 1);
 	while (++i < num_philos)
 	{
-		philos[i].forks = init_forks(num_philos);
-		philos[i].print_lock = print_lock;
-		pthread_mutex_init(&philos[i].struct_lock, NULL);
-		philos[i].dead = dead;
-		philos[i].eaten = 0;
+		philos[i].forks = get_forks(num_philos);
+		philos[i].print_lock = (pthread_mutex_t*)pointer_to(PRINT_LOCK);
+		philos[i].dead_lock = (pthread_mutex_t*)pointer_to(DEAD_LOCK);
+		philos[i].end_lock = (pthread_mutex_t*)pointer_to(END_LOCK);
+		philos[i].struct_lock = get_struct_lock(i, 0);
 		philos[i].philo = i;
-		philos[i].num_philos = num_philos;
-		philos[i].eat_time = eat;
-		philos[i].sleep_time = sleep;
-		philos[i].die_time = die;
-		philos[i].last_meal = start_time;
-		philos[i].start_time = start_time;
+		// philos[i].start_time = start_time;
+		philos[i].num_philos = my_atoi(argv[1]);
 		philos[i].first_fork = first_fork(num_philos, i);
 		philos[i].second_fork = second_fork(num_philos, i);
-		philos[i].philo_pointer = &philos;
+		get_times(&philos[i], argc, argv);
 	}
 	return (philos);
 }
