@@ -68,48 +68,25 @@
 		}
 	}
 
-	int	max(int a, int b)
-	{
-		if (a > b)
-			return (a);
-		return (b);
-	}
-
-	void	*start_timer(void *arg)
+	void	*death_timer(void *arg)
 	{
 		t_thread_data	*data;
 		int				old_eat;
-		pthread_mutex_t *lock;
 
 		data = arg;
 		old_eat = data->old_times;
 		end(1, data->end_lock);
-		lock = data->struct_lock;
-		if (dead(0, data->dead_lock))
-		{
-			end(-1, data->end_lock);
-			return (NULL);
-		}
-		pthread_mutex_lock(lock);
-		pthread_mutex_unlock(lock);
 		usleep(data->die_time * 1000);
-		if (dead(0, data->dead_lock))
-		{
-			end(-1, data->end_lock);
-			return (NULL);
-		}
-		pthread_mutex_lock(lock);
-		// printf("%d old %d *data \n", old_eat, *data->times_to_eat);	
+		pthread_mutex_lock(data->struct_lock);
 		if (*data->times_to_eat != old_eat || *data->times_to_eat <= 0)
 		{
-			pthread_mutex_unlock(lock);
+			pthread_mutex_unlock(data->struct_lock);
 			end(-1, data->end_lock);
 			return (NULL);
 		}
-		// pthread_detach(data->this);
-		pthread_mutex_unlock(lock);
+		pthread_mutex_unlock(data->struct_lock);
 		if (!dead(0, data->dead_lock))
-		lock_print(data->philo, data->dead_lock, data->print_lock, DIED);
+			lock_print(data->philo, data->dead_lock, data->print_lock, DIED);
 		end(-1, data->end_lock);
 		return (NULL);
 	}
@@ -126,7 +103,6 @@
 
 		
 		philo = arg;
-		// pthread_mutex_init(philo->data_lock, NULL);
 		data.data_lock = philo->data_lock;
 		data.dead_lock = philo->dead_lock;
 		data.end_lock = philo->end_lock;
@@ -145,7 +121,7 @@
 		data.old_times = philo->times_to_eat;
 		if (dead(0, philo->dead_lock))
 			return (NULL);
-		pthread_create(&timer, NULL, &start_timer, (void*)&data);
+		pthread_create(&timer, NULL, &death_timer, (void*)&data);
 		pthread_detach(timer);
 		if (id % 2 == 1)
 			usleep(10000);
@@ -155,37 +131,25 @@
 			if (philo->first_fork == philo->second_fork)
 				continue ;
 			lock_print(philo->philo, philo->dead_lock, philo->print_lock, THINKING);
-
 			pthread_mutex_lock(&philo->forks[philo->first_fork]);
-
-			
 			lock_print(philo->philo, philo->dead_lock, philo->print_lock, TAKEN_FORK);
-
 			pthread_mutex_lock(&philo->forks[philo->second_fork]);
-
 			pthread_mutex_lock(lock);
 			philo->times_to_eat--;
 			pthread_mutex_unlock(lock);
 			lock_print(philo->philo, philo->dead_lock, philo->print_lock, EATING);
 			data.old_times = philo->times_to_eat;
-				pthread_create(&timer, NULL, &start_timer, (void*)&data);
-				pthread_detach(timer);
-
+			pthread_create(&timer, NULL, &death_timer, (void*)&data);
+			pthread_detach(timer);
 			if (!dead(0, philo->dead_lock))
 				usleep(eat_time * 1000);
 			pthread_mutex_lock(lock);
-
 			pthread_mutex_unlock(lock);
-			// if (!dead(0, philo->dead_lock))
-			// {
-			// }
 			pthread_mutex_unlock(&philo->forks[philo->first_fork]);
 			pthread_mutex_unlock(&philo->forks[philo->second_fork]);
 			lock_print(philo->philo, philo->dead_lock, philo->print_lock, SLEEPING);
-			// printf("%d sleep\n", sleep_time);
 			if (!dead(0, philo->dead_lock))
 				usleep(sleep_time * 1000);
-			// usleep(5);
 		}
 		end(-1, philo->end_lock);
 		while(end(0, philo->end_lock))
@@ -234,13 +198,11 @@
 		while (!end(0, &end_lock))
 			usleep(1000);
 		i = 0;
-
 		while (i < threads)
 		{
 			pthread_join(tid[i], NULL);
 			i++;
 		}
-		// usleep(10000000);
 		get_struct_lock(0, -1);
 		get_forks(-1);
 		free (philos);

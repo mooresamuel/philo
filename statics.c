@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 11:29:16 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/06 12:53:26 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/06 14:37:23 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@ int	dead(int num, pthread_mutex_t *dead_lock)
 {
 	static int	dead = 0;
 
-	// if (dead)
-	// 	return (1);
 	pthread_mutex_lock(dead_lock);
 	dead += num;
 	num = dead;

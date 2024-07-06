@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:14:24 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/06 14:11:56 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/06 14:28:57 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,6 @@ t_philos	*init_philos(int num_philos, int argc, char **argv)
 		philos[i].end_lock = (pthread_mutex_t*)pointer_to(END_LOCK);
 		philos[i].struct_lock = get_struct_lock(i, 0);
 		philos[i].philo = i;
-		// philos[i].start_time = start_time;
 		philos[i].num_philos = my_atoi(argv[1]);
 		philos[i].first_fork = first_fork(num_philos, i);
 		philos[i].second_fork = second_fork(num_philos, i);
