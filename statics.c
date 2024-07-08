@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 11:29:16 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/06 14:37:23 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/08 14:32:17 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	dead(int num, pthread_mutex_t *dead_lock)
 	return (num);
 }
 
-int end(int num, pthread_mutex_t *end_lock)
+int	end(int num, pthread_mutex_t *end_lock)
 {
 	static int	end = 0;
 
@@ -31,5 +31,5 @@ int end(int num, pthread_mutex_t *end_lock)
 	end += num;
 	num = end;
 	pthread_mutex_unlock(end_lock);
-	return (num);	
+	return (num);
 }
