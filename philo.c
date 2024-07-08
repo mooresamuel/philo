@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 18:18:19 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/08 20:48:30 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/08 21:48:27 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,10 +87,6 @@ void	*death_timer(void *arg)
 	pthread_mutex_unlock(data->struct_lock);
 	if (!dead(0, data->dead_lock))
 		lock_print(data->philo, data->dead_lock, data->print_lock, DIED);
-	if (*data->has_first_fork)
-		pthread_mutex_unlock(&data->fork_locks[data->first_fork]);
-	if (*data->has_second_fork)
-		pthread_mutex_unlock(&data->fork_locks[data->second_fork]);
 	end(-1, data->end_lock);
 	return (NULL);
 }
@@ -125,12 +121,18 @@ void	philo_main_loop(t_philos *philo, t_thread_data *data)
 
 	// if (!dead(0, philo->dead_lock))
 		take_fork(philo, philo->first_fork);
-	// lock_print(philo->philo, philo->dead_lock, philo->print_lock, TAKEN_FORK);
-	// if (!dead(0, philo->dead_lock))
+	// printf("%d 11st %d second\n", philo->first_fork, philo->second_fork);
+	lock_print(philo->philo, philo->dead_lock, philo->print_lock, TAKEN_FORK);
+	if (philo->first_fork == philo->second_fork)
+	{
+		return_fork(philo, philo->first_fork);
+		usleep(philo->die_time * 1000);
+	}
+	if (!dead(0, philo->dead_lock))
 		take_fork(philo, philo->second_fork);
 	decrement_eat_times(philo->struct_lock, &philo->times_to_eat);
 	lock_print(philo->philo, philo->dead_lock, philo->print_lock, EATING);
-	if (!dead(0, philo->dead_lock))
+	if (!dead(0, philo->dead_lock) && philo->times_to_eat)
 	{
 		data->old_times_to_eat = philo->times_to_eat;
 		pthread_create(&timer, NULL, &death_timer, (void *)data);
@@ -156,17 +158,21 @@ void	*new_philosopher(void *arg)
 	philo = arg;
 	set_timer_data(&data, philo);
 	while (!*(philo->ready))
-		usleep(100);
+		usleep(500);
 	philo->start_time = *start_time();
 	if (!dead(0, philo->dead_lock))
 	{
 		pthread_create(&timer, NULL, &death_timer, (void *)&data);
 		pthread_detach(timer);
 	}
-	if (philo->philo % 2 == 1)
+	if (philo->philo % 2 == 0)
 		usleep(500);
 	while (!dead(0, philo->dead_lock) && philo->times_to_eat)
 		philo_main_loop(philo, &data);
+	if (philo->has_first_fork)
+		pthread_mutex_unlock(&philo->fork_locks[philo->first_fork]);
+	if (philo->has_second_fork)
+		pthread_mutex_unlock(&philo->fork_locks[philo->second_fork]);
 	end(-1, philo->end_lock);
 	while (end(0, philo->end_lock))
 		usleep(1000);

@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:14:24 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/08 20:45:29 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/08 21:51:10 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,13 +68,12 @@ t_philos	*init_philos(int num_philos, int argc,
 	philos = malloc(sizeof(t_philos) * num_philos);
 	pointer_to(INIT);
 	i = -1;
-	get_struct_lock(num_philos, INIT);
+	get_struct_lock(INIT, num_philos);
 	get_fork_locks(INIT, num_philos);
 	while (++i < num_philos)
 	{
 		philos[i].ready = start;
 		philos[i].fork_locks = get_fork_locks(RETURN, 0);
-		// philos[i].forks = get_forks(0);
 		philos[i].print_lock = (pthread_mutex_t *)pointer_to(PRINT_LOCK);
 		philos[i].dead_lock = (pthread_mutex_t *)pointer_to(DEAD_LOCK);
 		philos[i].end_lock = (pthread_mutex_t *)pointer_to(END_LOCK);
