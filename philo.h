@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:15:12 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/08 17:01:12 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/08 20:24:50 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,29 +67,39 @@ typedef struct s_thread_data
 	pthread_mutex_t	*struct_lock;
 	pthread_mutex_t	*dead_lock;
 	pthread_mutex_t	*end_lock;
+	pthread_mutex_t	*fork_locks;
 	int				philo;
 	int				die_time;
 	atomic_int		*times_to_eat;
+	int				old_times_to_eat;
 	long			start_time;
+	int				first_fork;
+	int				second_fork;
+	int				*has_first_fork;
+	int				*has_second_fork;
 }					t_thread_data;
 
 //init.c
-pthread_mutex_t	*get_struct_lock(int philo, t_type action);
 t_philos		*init_philos(int num_philos, int argc,
 					char **argv, atomic_int *start);
 int				my_atoi(char *str);
 void			*pointer_to(t_type type);
-pthread_mutex_t	*get_fork_locks(t_type action, int num);
 
 //forks.c
 // pthread_mutex_t	*get_forks(int num_philos);
 int				first_fork(int num_philos, int philo);
 int				second_fork(int num_philos, int philo);
-int				take_fork(t_philos *philo, int fork, int *forks);
+int				take_fork(t_philos *philo, int fork);
 void			return_fork(t_philos *philo, int fork);
-int				*get_forks(int num);
 int				fork_state(t_philos *philo, int num, int *forks, t_type action);
 
 //statics.c
 int				dead(int num, pthread_mutex_t *dead_lock);
 int				end(int num, pthread_mutex_t *end_lock);
+int				*get_forks(int num);
+void			add_locks(t_philos *philos, char **argv);
+
+//locks.c
+pthread_mutex_t	*get_fork_locks(t_type action, int num);
+pthread_mutex_t	*get_struct_lock(t_type action, int philo);
+

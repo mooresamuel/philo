@@ -6,35 +6,11 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:14:24 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/08 16:26:27 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/08 20:45:29 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <philo.h>
-
-pthread_mutex_t	*get_struct_lock(int philo, t_type action)
-{
-	static pthread_mutex_t	*struct_locks = NULL;
-	int						i;
-
-	if (action == INIT)
-	{
-		struct_locks = malloc(sizeof(pthread_mutex_t) * philo);
-		i = -1;
-		while (++i < philo)
-			pthread_mutex_init(&struct_locks[i], NULL);
-	}
-	else if (action == CLEAN)
-	{
-		i = -1;
-		while (++i < philo)
-			pthread_mutex_destroy(&struct_locks[i]);
-		free (struct_locks);
-	}
-	else
-		return (&struct_locks[philo]);
-	return (NULL);
-}
 
 void	*pointer_to(t_type type)
 {
@@ -83,27 +59,6 @@ void	get_times(t_philos *philo, int argc, char **argv)
 		philo->times_to_eat = my_atoi(argv[5]);
 }
 
-pthread_mutex_t	*get_fork_locks(t_type action, int num)
-{
-	static pthread_mutex_t	*fork_locks;
-	int						i;
-
-	if (action == INIT)
-	{
-		fork_state(NULL, 0, NULL, INIT);
-		i = 0;
-		fork_locks = malloc(sizeof(pthread_mutex_t) * num);
-		while (i < num)
-			pthread_mutex_init(&fork_locks[i++], NULL);
-	}
-	if (action == CLEAN)
-	{
-		free (fork_locks);
-		return (NULL);
-	}
-	return (fork_locks);
-}
-
 t_philos	*init_philos(int num_philos, int argc,
 						char **argv, atomic_int *start)
 {
@@ -119,11 +74,11 @@ t_philos	*init_philos(int num_philos, int argc,
 	{
 		philos[i].ready = start;
 		philos[i].fork_locks = get_fork_locks(RETURN, 0);
-		philos[i].forks = get_forks(0);
+		// philos[i].forks = get_forks(0);
 		philos[i].print_lock = (pthread_mutex_t *)pointer_to(PRINT_LOCK);
 		philos[i].dead_lock = (pthread_mutex_t *)pointer_to(DEAD_LOCK);
 		philos[i].end_lock = (pthread_mutex_t *)pointer_to(END_LOCK);
-		philos[i].struct_lock = get_struct_lock(i, RETURN);
+		philos[i].struct_lock = get_struct_lock(RETURN, i);
 		philos[i].philo = i;
 		philos[i].num_philos = my_atoi(argv[1]);
 		philos[i].first_fork = first_fork(num_philos, i);
