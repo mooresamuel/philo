@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <philo.h>
+#include "philo.h"
 
 long	*start_time(void)
 {
@@ -106,9 +106,6 @@ void	set_timer_data(t_thread_data *data, t_philos *philo)
 	data->die_time = philo->die_time;
 	data->has_first_fork = &philo->has_first_fork;
 	data->has_second_fork = &philo->has_second_fork;
-	data->fork_locks = philo->fork_locks;
-	data->first_fork = philo->first_fork;
-	data->second_fork = philo->second_fork;
 	data->old_times_to_eat = philo->times_to_eat;
 }
 
@@ -123,25 +120,27 @@ void	philo_main_loop(t_philos *philo, t_thread_data *data)
 {
 	pthread_t		timer;
 
-	take_fork(philo, philo->first_fork);
+	take_fork(philo);
 	lock_print(philo->philo, philo->dead_lock, philo->print_lock, TAKEN_FORK);
-	if (philo->first_fork == philo->second_fork)
+	if (philo->num_philos == 1)
 	{
-		return_fork(philo, philo->first_fork);
+		return_fork(philo);
 		usleep(philo->die_time * 1000);
 	}
-	take_fork(philo, philo->second_fork);
+	take_fork(philo);
 	decrement_eat_times(philo->struct_lock, &philo->times_to_eat);
 	lock_print(philo->philo, philo->dead_lock, philo->print_lock, EATING);
 	if (!dead(0, philo->dead_lock) && philo->times_to_eat)
 	{
+		pthread_mutex_lock(philo->struct_lock);
 		data->old_times_to_eat = philo->times_to_eat;
+		pthread_mutex_unlock(philo->struct_lock);
 		pthread_create(&timer, NULL, &death_timer, (void *)data);
 		pthread_detach(timer);
 	}
 	usleep(philo->eat_time * 1000);
-	return_fork(philo, philo->first_fork);
-	return_fork(philo, philo->second_fork);
+	return_fork(philo);
+	return_fork(philo);
 	lock_print(philo->philo, philo->dead_lock, philo->print_lock, SLEEPING);
 	usleep(philo->sleep_time * 1000);
 	lock_print(philo->philo, philo->dead_lock, philo->print_lock, THINKING);
@@ -162,13 +161,13 @@ void	*new_philosopher(void *arg)
 	pthread_create(&timer, NULL, &death_timer, (void *)&data);
 	pthread_detach(timer);
 	if (philo->philo % 2 == 0)
-		usleep(10000);
+		usleep(1100);
 	while (!dead(0, philo->dead_lock) && philo->times_to_eat)
 		philo_main_loop(philo, &data);
 	if (philo->has_first_fork)
-		pthread_mutex_unlock(&philo->fork_locks[philo->first_fork]);
+		return_fork(philo);
 	if (philo->has_second_fork)
-		pthread_mutex_unlock(&philo->fork_locks[philo->second_fork]);
+		return_fork(philo);
 	end(-1, philo->end_lock);
 	while (end(0, philo->end_lock))
 	{
@@ -187,6 +186,7 @@ int	main(int argc, char **argv)
 
 	i = -1;
 	start = 0;
+	sem_unlink(SEM_NAME);
 	if (argc != 5 && argc != 6)
 		return (printf("Invalid number of arguments!\n"), 1);
 	tid = malloc(sizeof(pthread_t) * my_atoi(argv[1]));
@@ -202,6 +202,8 @@ int	main(int argc, char **argv)
 		pthread_join(tid[i], NULL);
 	get_struct_lock(CLEAN, 0);
 	get_fork_locks(CLEAN, 0);
+	sem_close(philos[0].forks);
+	sem_unlink(SEM_NAME);
 	free (philos);
 	free (tid);
 	return (0);
