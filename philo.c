@@ -162,7 +162,7 @@ void	*new_philosopher(void *arg)
 	pthread_create(&timer, NULL, &death_timer, (void *)&data);
 	pthread_detach(timer);
 	if (philo->philo % 2 == 0)
-		usleep(500);
+		usleep(10000);
 	while (!dead(0, philo->dead_lock) && philo->times_to_eat)
 		philo_main_loop(philo, &data);
 	if (philo->has_first_fork)
