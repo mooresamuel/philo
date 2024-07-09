@@ -12,9 +12,9 @@
 
 #include <philo.h>
 
-atomic_long	*start_time(void)
+long	*start_time(void)
 {
-	static atomic_long	start_time = 0;
+	static long	start_time = 0;
 	struct timeval		time;
 
 	if (!start_time)
@@ -50,17 +50,17 @@ void	lock_print(int philo, pthread_mutex_t *dead_lock,
 		}
 		get_time_since_start(0);
 		if (state == EATING)
-			printf("philo %d is eating\n", philo);
+			printf("philo %d is eating\n", philo + 1);
 		else if (state == SLEEPING)
-			printf("philo %d is sleeping\n", philo);
+			printf("philo %d is sleeping\n", philo + 1);
 		else if (state == THINKING)
-			printf("philo %d is thinking\n", philo);
+			printf("philo %d is thinking\n", philo + 1);
 		else if (state == TAKEN_FORK)
-			printf("philo %d has taken a fork\n", philo);
+			printf("philo %d has taken a fork\n", philo + 1);
 		else if (state == DIED)
 		{
 			dead(1, dead_lock);
-			printf("philo %d has died\n", philo);
+			printf("philo %d has died\n", philo + 1);
 		}
 		pthread_mutex_unlock(print_lock);
 	}
@@ -69,13 +69,13 @@ void	lock_print(int philo, pthread_mutex_t *dead_lock,
 void	*death_timer(void *arg)
 {
 	t_thread_data	*data;
-	atomic_int				old_eat;
+	int				old_eat;
 
 	data = arg;
+	end(1, data->end_lock);
 	pthread_mutex_lock(data->struct_lock);
 	old_eat = data->old_times_to_eat;
 	pthread_mutex_unlock(data->struct_lock);
-	end(1, data->end_lock);
 	usleep(data->die_time * 1000);
 	pthread_mutex_lock(data->struct_lock);
 	if (*data->times_to_eat != old_eat || *data->times_to_eat <= 0)
@@ -85,9 +85,13 @@ void	*death_timer(void *arg)
 		return (NULL);
 	}
 	pthread_mutex_unlock(data->struct_lock);
+		end(-1, data->end_lock);
 	if (!dead(0, data->dead_lock))
+	{
+
+		
 		lock_print(data->philo, data->dead_lock, data->print_lock, DIED);
-	end(-1, data->end_lock);
+	}
 	return (NULL);
 }
 
@@ -108,7 +112,7 @@ void	set_timer_data(t_thread_data *data, t_philos *philo)
 	data->old_times_to_eat = philo->times_to_eat;
 }
 
-void	decrement_eat_times(pthread_mutex_t *lock, atomic_int *num)
+void	decrement_eat_times(pthread_mutex_t *lock, int *num)
 {
 	pthread_mutex_lock(lock);
 	(*num)--;
@@ -119,17 +123,14 @@ void	philo_main_loop(t_philos *philo, t_thread_data *data)
 {
 	pthread_t		timer;
 
-	// if (!dead(0, philo->dead_lock))
-		take_fork(philo, philo->first_fork);
-	// printf("%d 11st %d second\n", philo->first_fork, philo->second_fork);
+	take_fork(philo, philo->first_fork);
 	lock_print(philo->philo, philo->dead_lock, philo->print_lock, TAKEN_FORK);
 	if (philo->first_fork == philo->second_fork)
 	{
 		return_fork(philo, philo->first_fork);
 		usleep(philo->die_time * 1000);
 	}
-	if (!dead(0, philo->dead_lock))
-		take_fork(philo, philo->second_fork);
+	take_fork(philo, philo->second_fork);
 	decrement_eat_times(philo->struct_lock, &philo->times_to_eat);
 	lock_print(philo->philo, philo->dead_lock, philo->print_lock, EATING);
 	if (!dead(0, philo->dead_lock) && philo->times_to_eat)
@@ -139,13 +140,11 @@ void	philo_main_loop(t_philos *philo, t_thread_data *data)
 		pthread_detach(timer);
 	}
 	usleep(philo->eat_time * 1000);
-	// if (!dead(0, philo->dead_lock))
-		return_fork(philo, philo->first_fork);
-	// if (!dead(0, philo->dead_lock))
-		return_fork(philo, philo->second_fork);
-	// lock_print(philo->philo, philo->dead_lock, philo->print_lock, SLEEPING);
+	return_fork(philo, philo->first_fork);
+	return_fork(philo, philo->second_fork);
+	lock_print(philo->philo, philo->dead_lock, philo->print_lock, SLEEPING);
 	usleep(philo->sleep_time * 1000);
-	// lock_print(philo->philo, philo->dead_lock, philo->print_lock, THINKING);
+	lock_print(philo->philo, philo->dead_lock, philo->print_lock, THINKING);
 	usleep(500);
 }
 
@@ -157,14 +156,11 @@ void	*new_philosopher(void *arg)
 
 	philo = arg;
 	set_timer_data(&data, philo);
-	while (!*(philo->ready))
-		usleep(500);
+	// while (!*(philo->ready))
+	// 	usleep(500);
 	philo->start_time = *start_time();
-	if (!dead(0, philo->dead_lock))
-	{
-		pthread_create(&timer, NULL, &death_timer, (void *)&data);
-		pthread_detach(timer);
-	}
+	pthread_create(&timer, NULL, &death_timer, (void *)&data);
+	pthread_detach(timer);
 	if (philo->philo % 2 == 0)
 		usleep(500);
 	while (!dead(0, philo->dead_lock) && philo->times_to_eat)
@@ -175,13 +171,16 @@ void	*new_philosopher(void *arg)
 		pthread_mutex_unlock(&philo->fork_locks[philo->second_fork]);
 	end(-1, philo->end_lock);
 	while (end(0, philo->end_lock))
+	{
+		// printf("end %d\n", end(0, philo->end_lock));
 		usleep(1000);
+	}
 	return (NULL);
 }
 
 int	main(int argc, char **argv)
 {
-	atomic_int	start;
+	int	start;
 	t_philos	*philos;
 	pthread_t	*tid;
 	int			i;
@@ -191,19 +190,16 @@ int	main(int argc, char **argv)
 	if (argc != 5 && argc != 6)
 		return (printf("Invalid number of arguments!\n"), 1);
 	tid = malloc(sizeof(pthread_t) * my_atoi(argv[1]));
-	// get_forks(my_atoi(argv[1]));
+	start_time();
 	philos = init_philos(my_atoi(argv[1]), argc, argv, &start);
-	// add_locks(philos, argv);
 	i = -1;
 	while (++i < my_atoi(argv[1]))
 		pthread_create(&(tid[i]), NULL, &new_philosopher, (void *)&philos[i]);
-	start_time();
-	start = 1;
+	// start = 1;
 	while (!dead(0, philos[0].dead_lock) && !end(0, philos[0].end_lock))
 		usleep(100);
 	while (--i >= 0)
 		pthread_join(tid[i], NULL);
-	// get_forks(-1);
 	get_struct_lock(CLEAN, 0);
 	get_fork_locks(CLEAN, 0);
 	free (philos);

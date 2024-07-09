@@ -46,14 +46,14 @@ typedef struct s_philos
 	pthread_mutex_t	*dead_lock;
 	pthread_mutex_t	*end_lock;
 	pthread_mutex_t	*fork_locks;
-	atomic_int		*ready;
+	int		*ready;
 	int				*forks;
 	int				philo;
 	int				num_philos;
 	int				eat_time;
 	int				sleep_time;
 	int				die_time;
-	atomic_int		times_to_eat;
+	int		times_to_eat;
 	long			start_time;
 	int				first_fork;
 	int				second_fork;
@@ -70,7 +70,7 @@ typedef struct s_thread_data
 	pthread_mutex_t	*fork_locks;
 	int				philo;
 	int				die_time;
-	atomic_int		*times_to_eat;
+	int		*times_to_eat;
 	int				old_times_to_eat;
 	long			start_time;
 	int				first_fork;
@@ -81,7 +81,7 @@ typedef struct s_thread_data
 
 //init.c
 t_philos		*init_philos(int num_philos, int argc,
-					char **argv, atomic_int *start);
+					char **argv, int *start);
 int				my_atoi(char *str);
 void			*pointer_to(t_type type);
 

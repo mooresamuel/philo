@@ -60,7 +60,7 @@ void	get_times(t_philos *philo, int argc, char **argv)
 }
 
 t_philos	*init_philos(int num_philos, int argc,
-						char **argv, atomic_int *start)
+						char **argv, int *start)
 {
 	int					i;
 	t_philos			*philos;
