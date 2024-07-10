@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 11:50:50 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/08 21:32:31 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/10 19:24:59 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,9 @@ void	return_fork(t_philos *philo)
 	int got_fork;
 
 	got_fork = 0;
-	pthread_mutex_lock(philo->struct_lock);
+	if (philo->end)
+		return ;
+	pthread_mutex_lock(&philo->struct_lock);
 	if (philo->has_first_fork)
 	{
 		if (philo->has_first_fork)
@@ -46,25 +48,30 @@ void	return_fork(t_philos *philo)
 	{
 		if (philo->has_second_fork)
 		{
-			got_fork = 1;
+			got_fork = 2;
 			philo->has_second_fork = 0;
 		}
 	}	
-	pthread_mutex_unlock(philo->struct_lock);
+	pthread_mutex_unlock(&philo->struct_lock);
 	if (!got_fork)
+		return ;
+	sem_post(philo->forks);
+	if (got_fork == 1)
 		return ;
 	sem_post(philo->forks);
 }
 
 int	take_fork(t_philos *philo)
 {
+	if (philo->end)
+		return (1);
 	sem_wait(philo->forks);
-	pthread_mutex_lock(philo->struct_lock);
+	pthread_mutex_lock(&philo->struct_lock);
 	if (!philo->has_first_fork)
 		philo->has_first_fork = 1;
 	else
 		philo->has_second_fork = 1;
-	pthread_mutex_unlock(philo->struct_lock);
+	pthread_mutex_unlock(&philo->struct_lock);
 	return (1);
 }
 

@@ -6,32 +6,11 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:14:24 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/08 21:51:10 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/10 16:33:53 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	*pointer_to(t_type type)
-{
-	static pthread_mutex_t	print_lock;
-	static pthread_mutex_t	dead_lock;
-	static pthread_mutex_t	end_lock;
-
-	if (type == PRINT_LOCK)
-		return ((void *) &print_lock);
-	if (type == DEAD_LOCK)
-		return ((void *) &dead_lock);
-	if (type == END_LOCK)
-		return ((void *) &end_lock);
-	if (type == INIT)
-	{
-		pthread_mutex_init(&print_lock, NULL);
-		pthread_mutex_init(&dead_lock, NULL);
-		pthread_mutex_init(&end_lock, NULL);
-	}
-	return (NULL);
-}
 
 int	my_atoi(char *str)
 {
@@ -59,33 +38,23 @@ void	get_times(t_philos *philo, int argc, char **argv)
 		philo->times_to_eat = my_atoi(argv[5]);
 }
 
-t_philos	*init_philos(int num_philos, int argc,
-						char **argv, int *start)
+t_philos	*init_philos(int num_philos, int argc, char **argv)
 {
-	int					i;
-	t_philos			*philos;
-	static sem_t		*semaphore;
+	static t_philos	philos;
+	static sem_t	*forks;
+	static sem_t	*print_lock;
+	static sem_t	*end_lock;
 
-	philos = malloc(sizeof(t_philos) * num_philos);
-	pointer_to(INIT);
-	i = -1;
-	semaphore = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0644, num_philos);
-	get_struct_lock(INIT, num_philos);
-	get_fork_locks(INIT, num_philos);
-	while (++i < num_philos)
-	{
-		philos[i].forks = semaphore;
-		philos[i].ready = start;
-		philos[i].print_lock = (pthread_mutex_t *)pointer_to(PRINT_LOCK);
-		philos[i].dead_lock = (pthread_mutex_t *)pointer_to(DEAD_LOCK);
-		philos[i].end_lock = (pthread_mutex_t *)pointer_to(END_LOCK);
-		philos[i].struct_lock = get_struct_lock(RETURN, i);
-		philos[i].philo = i;
-		philos[i].num_philos = my_atoi(argv[1]);
-		philos[i].has_first_fork = 0;
-		philos[i].has_second_fork = 0;
-		get_times(&philos[i], argc, argv);
-	}
-	end(num_philos, (pthread_mutex_t *)pointer_to(END_LOCK));
-	return (philos);
+	forks = sem_open(SEM_FORK, O_CREAT | O_EXCL, 0644, num_philos);
+	print_lock = sem_open(SEM_PRINT, O_CREAT | O_EXCL, 0644, 1);
+	end_lock = sem_open(SEM_END, O_CREAT | O_EXCL, 0644, 1);
+	philos.forks = forks;
+	philos.print_lock = print_lock;
+	philos.end_lock = end_lock;
+	philos.num_philos = my_atoi(argv[1]);
+	philos.has_first_fork = 0;
+	philos.has_second_fork = 0;
+	get_times(&philos, argc, argv);
+	// end(num_philos, (pthread_mutex_t *)pointer_to(END_LOCK));
+	return (&philos);
 }

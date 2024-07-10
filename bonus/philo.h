@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:15:12 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/08 20:54:35 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/10 17:52:10 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,11 @@
 #include <semaphore.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
-#define SEM_NAME "/sem"
+#define SEM_FORK "/sem_fork"
+#define SEM_PRINT "/sem_print"
+#define SEM_END "/sem_end"
 
 typedef enum s_philo_state
 {
@@ -46,14 +49,14 @@ typedef enum s_type
 
 typedef struct s_philos
 {
-	pthread_mutex_t	*print_lock;
-	pthread_mutex_t	*struct_lock;
+	pthread_mutex_t	struct_lock;
 	pthread_mutex_t	*dead_lock;
-	pthread_mutex_t	*end_lock;
 	sem_t			*forks;
-	int				*ready;
-	int				philo;
+	sem_t			*print_lock;
+	sem_t			*end_lock;
+	int				end;
 	int				num_philos;
+	int				philo;
 	int				eat_time;
 	int				sleep_time;
 	int				die_time;
@@ -65,11 +68,10 @@ typedef struct s_philos
 
 typedef struct s_thread_data
 {
-	pthread_mutex_t	*print_lock;
 	pthread_mutex_t	*struct_lock;
 	pthread_mutex_t	*dead_lock;
-	pthread_mutex_t	*end_lock;
-	pthread_mutex_t	*fork_locks;
+	t_philos		*philos;
+	int				*dead;
 	int				philo;
 	int				die_time;
 	int				*times_to_eat;
@@ -80,8 +82,7 @@ typedef struct s_thread_data
 }					t_thread_data;
 
 //init.c
-t_philos		*init_philos(int num_philos, int argc,
-					char **argv, int *start);
+t_philos		*init_philos(int num_philos, int argc, char **argv);
 int				my_atoi(char *str);
 void			*pointer_to(t_type type);
 
@@ -91,12 +92,10 @@ int				first_fork(int num_philos, int philo);
 int				second_fork(int num_philos, int philo);
 int				take_fork(t_philos *philo);
 void			return_fork(t_philos *philo);
-int				fork_state(t_philos *philo, int num, int *forks, t_type action);
 
 //statics.c
-int				dead(int num, pthread_mutex_t *dead_lock);
+int				dead(int num, int *dead, pthread_mutex_t *dead_lock);
 int				end(int num, pthread_mutex_t *end_lock);
-void			add_locks(t_philos *philos, char **argv);
 
 //locks.c
 pthread_mutex_t	*get_fork_locks(t_type action, int num);
