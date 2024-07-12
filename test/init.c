@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:14:24 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/12 16:55:53 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/12 14:03:33 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,21 @@ t_philos	*init_philos(int num_philos, int argc, char **argv)
 	static sem_t	*print_lock;
 	static sem_t	*end_lock;
 
+	sem_unlink(SEM_FORK);
+	sem_unlink(SEM_PRINT);
+	sem_unlink(SEM_END);
 	forks = sem_open(SEM_FORK, O_CREAT | O_EXCL, 0644, num_philos);
 	print_lock = sem_open(SEM_PRINT, O_CREAT | O_EXCL, 0644, 1);
-	end_lock = sem_open(SEM_END, O_CREAT | O_EXCL, 0644, 1);
+	end_lock = sem_open(SEM_END, O_CREAT, 00070, 1);
+
 	philos.forks = forks;
 	philos.print_lock = print_lock;
 	philos.end_lock = end_lock;
+	philos.end = 0;
 	philos.num_philos = my_atoi(argv[1]);
 	philos.has_first_fork = 0;
 	philos.has_second_fork = 0;
 	get_times(&philos, argc, argv);
+	// end(num_philos, (pthread_mutex_t *)pointer_to(END_LOCK));
 	return (&philos);
 }
