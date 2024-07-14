@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:15:12 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/12 17:11:04 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/10 17:52:10 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <signal.h>
 
 #define SEM_FORK "/sem_fork"
 #define SEM_PRINT "/sem_print"
@@ -55,25 +54,32 @@ typedef struct s_philos
 	sem_t			*forks;
 	sem_t			*print_lock;
 	sem_t			*end_lock;
-	atomic_int		end;
-	atomic_int				num_philos;
-	atomic_int				philo;
-	atomic_int		wait;
+	int				end;
+	int				num_philos;
+	int				philo;
 	int				eat_time;
 	int				sleep_time;
-	atomic_int				die_time;
-	atomic_int		times_to_eat;
+	int				die_time;
+	int				times_to_eat;
 	long			start_time;
-	atomic_int				has_first_fork;
-	atomic_int				has_second_fork;
+	int				has_first_fork;
+	int				has_second_fork;
 }					t_philos;
 
-typedef struct s_timer_data
+typedef struct s_thread_data
 {
-	t_philos	*philo;
-	atomic_int	die_time;
-	atomic_int	old_eat;
-}				t_timer_data;
+	pthread_mutex_t	*struct_lock;
+	pthread_mutex_t	*dead_lock;
+	t_philos		*philos;
+	int				*dead;
+	int				philo;
+	int				die_time;
+	int				*times_to_eat;
+	int				old_times_to_eat;
+	long			start_time;
+	int				*has_first_fork;
+	int				*has_second_fork;
+}					t_thread_data;
 
 //init.c
 t_philos		*init_philos(int num_philos, int argc, char **argv);

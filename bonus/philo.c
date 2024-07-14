@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 18:18:19 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/12 17:12:24 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/10 19:27:36 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,84 +25,62 @@ long	*start_time(void)
 	return (&start_time);
 }
 
-long	get_time_since_start(void)
+long	get_time_since_start(int silent)
 {
 	struct timeval	time;
 	long			elapsed_time;
 
 	gettimeofday(&time, NULL);
 	elapsed_time = (time.tv_sec * 1000 + time.tv_usec / 1000) - *start_time ();
+	if (!silent)
+		printf("%4ld : ", elapsed_time);
 	return (elapsed_time);
 }
 
 int	lock_print(t_philos *philo, t_philo_state state)
 {
 	int	philo_num;
-	long time;
 
 	// printf("waiting for print/n");
-	// pthread_mutex_lock(&philo->struct_lock);
+	pthread_mutex_lock(&philo->struct_lock);
 	philo_num = philo->philo;
-	// pthread_mutex_unlock(&philo->struct_lock);
+	pthread_mutex_unlock(&philo->struct_lock);
 	// if (!dead(0, philo->dead, philo->dead_lock))
 	// {
 		// pthread_mutex_lock(philo->print_lock);
-		// if (philo->end)
-		// 	return (1);
-			sem_wait(philo->print_lock);
-		// usleep(1000);
-		// if (philo->end)
-		// {
-		// 	sem_post(philo->print_lock);			
-		// 	return (1);
-		// }
+		if (philo->end)
+			return (1);
+		sem_wait(philo->print_lock);
 		// if (dead(0, philo->dead, philo->dead_lock))
 		// {
 		// 	pthread_mutex_unlock(philo->print_lock);
 		// 	return ;
 		// }
-		time = get_time_since_start();
-		// if (philo->end)
-		// {
-		// 	sem_post(philo->print_lock);
-		// 	return (1);
-		// }
-		if (state == EATING && !philo->end)
-			printf("%ld philo %d is eating\n", time, philo_num + 1);
-		else if (state == SLEEPING && !philo->end)
-			printf("%ld philo %d is sleeping\n", time, philo_num + 1);
-		else if (state == THINKING && !philo->end)
-			printf("%ld philo %d is thinking\n", time, philo_num + 1);
-		else if (state == TAKEN_FORK && !philo->end)
-			printf("%ld philo %d has taken a fork\n", time, philo_num + 1);
-		else if (state == DIED && !philo->end)
+		get_time_since_start(0);
+		if (state == EATING)
+			printf("philo %d is eating\n", philo_num + 1);
+		else if (state == SLEEPING)
+			printf("philo %d is sleeping\n", philo_num + 1);
+		else if (state == THINKING)
+			printf("philo %d is thinking\n", philo_num + 1);
+		else if (state == TAKEN_FORK)
+			printf("philo %d has taken a fork\n", philo_num + 1);
+		else if (state == DIED)
 		{
-			// if (philo->end)
-			// {
-			// 	sem_post(philo->print_lock);
-			// 	sem_post(philo->end_lock);
-			// 	return (1);
-			// }
-			if (!philo->end)
-				printf("%ld philo %d has died\n", time, philo_num + 1);
-
-			sem_post(philo->print_lock);
-			sem_post(philo->end_lock);
-			return_fork(philo);
+			printf("philo %d has died\n", philo_num + 1);
 			// usleep(philo->die_time * 1000);
 			// sem_close(philo->forks);
-			// sem_unlink(SEM_FORK);
+			// // sem_unlink(SEM_FORK);
 			// sem_close(philo->end_lock);
-			// sem_unlink(SEM_END);
+			// // sem_unlink(SEM_END);
 			// sem_close(philo->print_lock);
-			// sem_unlink(SEM_PRINT);
-			// philo->end = 1;
-			// sem_post(philo->print_lock);
+			// // sem_unlink(SEM_PRINT);
+			sem_post(philo->end_lock);
+			sem_post(philo->print_lock);
+			philo->end = 1;
 					// sem_post(philo->print_lock);
+			return (1);
 			// exit (1);
-			// exit (1);
-			philo->wait = 0;
-			return (0);
 		}
 		sem_post(philo->print_lock);
 	// }
@@ -111,39 +89,60 @@ int	lock_print(t_philos *philo, t_philo_state state)
 
 void	*death_timer(void *arg)
 {
-	t_philos	*philo;
-	atomic_int				old_eat;
+	t_thread_data	*data;
+	int				old_eat;
 
-
-	philo = (t_philos *)arg;
-	atomic_int	die_time = philo->die_time;
-
-	printf("philo %d      die time: %d\n", philo->philo, philo->die_time);	
-
-	// pthread_mutex_lock(data->struct_lock);
-	old_eat = philo->times_to_eat;
-	// pthread_mutex_unlock(philo->struct_lock);
-	// printf("die time: %d\n", die_time);
-	usleep(die_time * 1000);
-	// pthread_mutex_lock(philo->struct_lock);
-	// if (philo->end)
-	// 	return (NULL);
-	if (philo->times_to_eat != old_eat || philo->times_to_eat <= 0)
+	data = arg;
+	pthread_mutex_lock(data->struct_lock);
+	old_eat = data->old_times_to_eat;
+	pthread_mutex_unlock(data->struct_lock);
+	usleep(data->die_time * 1000);
+	pthread_mutex_lock(data->struct_lock);
+	if (*data->times_to_eat != old_eat || *data->times_to_eat <= 0)
 	{
-		// pthread_mutex_unlock(data->struct_lock);
+		pthread_mutex_unlock(data->struct_lock);
 		return (NULL);
 	}
-		// philo->end = 1;
-		philo->wait = 1;
-	return(lock_print(philo, DIED), NULL);
+	if (data->philos->end)
+		return (NULL);
+	pthread_mutex_unlock(data->struct_lock);
+	// if (!dead(0, data->dead, data->dead_lock))
+	// {
+			// sem_close(data->philos->forks);
+			// // sem_unlink(SEM_FORK);
+			// sem_close(data->philos->end_lock);
+			// // sem_unlink(SEM_END);
+			// sem_close(data->philos->print_lock);
+			// // sem_unlink(SEM_PRINT);
+		// exit(1);
+		lock_print(data->philos, DIED);
 	// }
 	return (NULL);
 }
 
-void	philo_main_loop(t_philos *philo)
-{	
-	pthread_t	new;
-	t_timer_data	data;
+void	set_timer_data(t_thread_data *data, t_philos *philo)
+{
+	data->dead_lock = philo->dead_lock;
+	data->philo = philo->philo;
+	data->struct_lock = &philo->struct_lock;
+	data->times_to_eat = &philo->times_to_eat;
+	data->die_time = philo->die_time;
+	data->has_first_fork = &philo->has_first_fork;
+	data->has_second_fork = &philo->has_second_fork;
+	data->old_times_to_eat = philo->times_to_eat;
+	data->philos = philo;
+}
+
+void	decrement_eat_times(pthread_mutex_t *lock, int *num)
+{
+	pthread_mutex_lock(lock);
+	(*num)--;
+	pthread_mutex_unlock(lock);
+}
+
+void	philo_main_loop(t_philos *philo, t_thread_data *data)
+{
+	pthread_t		timer;
 
 	take_fork(philo);
 	lock_print(philo, TAKEN_FORK);
@@ -153,15 +152,15 @@ void	philo_main_loop(t_philos *philo)
 		usleep(philo->die_time * 1000);
 	}
 	take_fork(philo);
-	philo->times_to_eat--;
+	decrement_eat_times(&philo->struct_lock, &philo->times_to_eat);
 	lock_print(philo, EATING);
-	if (philo->times_to_eat && !philo->end && !philo->wait)
+	if (philo->times_to_eat && !philo->end)
 	{
-		data.philo = philo;
-		data.die_time = philo->die_time;
-		data.old_eat = philo->times_to_eat;
-		pthread_create(&new, NULL, &death_timer, (void*)&data);
-		pthread_detach(new);
+		pthread_mutex_lock(&philo->struct_lock);
+		data->old_times_to_eat = philo->times_to_eat;
+		pthread_mutex_unlock(&philo->struct_lock);
+		pthread_create(&timer, NULL, &death_timer, (void *)data);
+		pthread_detach(timer);
 	}
 	usleep(philo->eat_time * 1000);
 	return_fork(philo);
@@ -169,8 +168,6 @@ void	philo_main_loop(t_philos *philo)
 	usleep(philo->sleep_time * 1000);
 	lock_print(philo, THINKING);
 	usleep(500);
-	// pthread_join(*timer, NULL);
-	return ;
 }
 
 void	*end_checker(void *arg)
@@ -181,94 +178,139 @@ void	*end_checker(void *arg)
 	sem_wait(philo->end_lock);
 	sem_post(philo->end_lock);
 	philo->end = 1;
-	// printf("END CHECKER\n");
+	// sem_close(philo->forks);
+	// sem_unlink(SEM_FORK);
+	// sem_close(philo->print_lock);
+	// sem_unlink(SEM_PRINT);
+	// sem_close(philo->end_lock);
+	// sem_unlink(SEM_END);
+	// exit (1);
 	return (NULL);
 }
 
 void	*new_philosopher(void *arg)
 {
-	static pthread_t		timer;
-	pthread_t		new;
+	t_thread_data	data;
+	pthread_t		timer;
+	pthread_t		end_check;
 	t_philos		*philo;
 
 	philo = arg;
-	philo->wait = 0;
+	pthread_create(&end_check, NULL, &end_checker, arg);
+	set_timer_data(&data, philo);
+	// while (!*(philo->ready))
+	// 	usleep(500);
+	// while (dead(0, philo->dead, philo->dead_lock) == -1)
+	// 	usleep(100);
+
 	philo->start_time = *start_time();
-	printf("philo %d      die time: %d\n", philo->philo, philo->die_time);	
-	if (philo->philo % 2 == 1)
-		usleep(10000);
+	if (philo->philo % 2 == 0)
+		usleep(1100);
 	if (!philo->end)
 	{
-		pthread_create(&timer, NULL, &death_timer, (void *)&philo);
+		pthread_create(&timer, NULL, &death_timer, (void *)&data);
+		pthread_detach(timer);
 	}
+	// printf("times to eat:: %d\n", philo->times_to_eat);
 	while (philo->times_to_eat && !philo->end)
-	{
-		philo_main_loop(philo);
-		// timer = new;
-	}
-	// if (new)
-		// pthread_join(new, NULL);
-	while (philo->wait)
-		usleep(1000);
-	// pthread_join(timer, NULL);
-	// return_fork(philo);
-	// sem_post(philo->end_lock);
+		philo_main_loop(philo, &data);
+	// if (philo->has_first_fork)
+	// 	return_fork(philo);
+	// while (end(0, philo->en
+	// if (!philo->end)
+	// 	sem_post(philo->end_lock);
+	// philo->end = 1;
+	pthread_join(end_check, NULL);
+	sem_close(philo->forks);
+	sem_unlink(SEM_FORK);
+	sem_close(philo->print_lock);
+	sem_unlink(SEM_PRINT);
+	sem_close(philo->end_lock);
+	sem_unlink(SEM_END);
 	return (NULL);
 }
 
-void	child_process(t_philos *philo, int num)
+void	child_process(t_philos *philo, int num, int *dead, pid_t *pid)
 {
 	pthread_t	new;
-	pthread_t		end_check;
-	atomic_int			die_time;
 
 	philo->end = 0;
-	die_time = philo->die_time;
+	pthread_mutex_init(&philo->struct_lock, NULL);
 	philo->philo = num;
-	pthread_create(&end_check, NULL, &end_checker, (void*)philo);
-	pthread_create(&new, NULL, &new_philosopher, (void*)philo);
+	// new_philosopher(philo);
+	// printf(".......times to eat:: %d\n", philo->times_to_eat);
+	pthread_create(&new, NULL, &new_philosopher, (void *)philo);
 	pthread_join(new, NULL);
-	pthread_join(end_check, NULL);
+	sem_wait(philo->end_lock);
+	sem_post(philo->end_lock);
+	usleep(philo->die_time * 1000);
+	philo->end = 1;
+	// pthread_join(new, NULL);
+		printf(" -----fin\n");
+	// sem_wait(philo->end_lock);
 	// sem_post(philo->end_lock);
-	// usleep(philo->die_time * 1000);
+	// usleep(philo->die_time * 2000);
+	// printf("\n\n\nphilo %d done\n\n\n", num);
 	sem_close(philo->forks);
+	// sem_unlink(SEM_FORK);
 	sem_close(philo->print_lock);
+	// sem_unlink(SEM_PRINT);
 	sem_close(philo->end_lock);
-	return ;
+	free(pid);
+	// sem_unlink(SEM_END);
+	// kill (1, 2);
+	exit (1);
 }
 
 int	main(int argc, char **argv)
 {
+	int			*dead_point;
+	int			dead_val;
 	t_philos	*philos;
-	atomic_int			i;
-	atomic_int		*pid;
+	int			i;
+	pid_t		*pid;
 
 	i = -1;
+	dead_val = -1;
+	dead_point = &dead_val;
 	sem_unlink(SEM_FORK);
 	sem_unlink(SEM_PRINT);
 	sem_unlink(SEM_END);
 	if (argc != 5 && argc != 6)
 		return (printf("Invalid number of arguments!\n"), 1);
-	pid = malloc(sizeof(atomic_int) * my_atoi(argv[1]));
-	// start_time();
+	pid = malloc(sizeof(pid_t) * my_atoi(argv[1]));
+	start_time();
 	philos = init_philos(my_atoi(argv[1]), argc, argv);
-	// sem_post(philos->end_lock);
 	sem_wait(philos->end_lock);
-	// sem_wait(philos->end_lock);
 	i = -1;
+	// dead(1, dead_point, philos->dead_lock);
 	while (++i < my_atoi(argv[1]))
 	{
 		pid[i] = fork ();
 		if (pid[i] == 0)
-		{
-			child_process(philos, i);
-			free (pid);
-			exit (0);
-		}
+			child_process(philos, i, dead_point, pid);
+		// else
+		// {
+		// 	sem_close(philos->forks);
+		// 	sem_unlink(SEM_FORK);
+		// 	sem_close(philos->print_lock);
+		// 	sem_unlink(SEM_PRINT);
+		// 	sem_close(philos->end_lock);
+		// 	sem_unlink(SEM_END);	
+		// }
 
 	}
-	while (--i >= 0)
-		waitpid(pid[i], NULL, 0);
+		// pthread_create(&(tid[i]), NULL, &new_philosopher, (void *)&philos[i]);
+	// start = 1;
+	// while (!dead(0, philo->dead, philos[0].dead_lock) && !end(0, philos[0].end_lock))
+	// 	usleep(100);
+	wait(0);
+	// sem_post(philos->end_lock);
+	printf("fin\n");
+	// while (--i >= 0)
+	// 	waitpid(pid[i], NULL, 0);
+	// while (--i >= 0)
+	// 	kill(pid[i], 2);
 	sem_close(philos->forks);
 	sem_unlink(SEM_FORK);
 	sem_close(philos->end_lock);
@@ -276,5 +318,6 @@ int	main(int argc, char **argv)
 	sem_close(philos->print_lock);
 	sem_unlink(SEM_PRINT);
 	free (pid);
+	// free (philos);
 	return (0);
 }

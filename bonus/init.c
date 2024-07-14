@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:14:24 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/12 16:55:53 by samoore          ###   ########.fr       */
+/*   Updated: 2024/07/10 16:33:53 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,5 +55,6 @@ t_philos	*init_philos(int num_philos, int argc, char **argv)
 	philos.has_first_fork = 0;
 	philos.has_second_fork = 0;
 	get_times(&philos, argc, argv);
+	// end(num_philos, (pthread_mutex_t *)pointer_to(END_LOCK));
 	return (&philos);
 }
