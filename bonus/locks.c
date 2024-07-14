@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 // pthread_mutex_t	*get_fork_locks(t_type action, int num)
 // {

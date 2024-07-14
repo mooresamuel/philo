@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 // int	dead(int num, int *dead, pthread_mutex_t *dead_lock)
 // {

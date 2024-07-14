@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 int	my_atoi(char *str)
 {
@@ -44,17 +44,23 @@ t_philos	*init_philos(int num_philos, int argc, char **argv)
 	static sem_t	*forks;
 	static sem_t	*print_lock;
 	static sem_t	*end_lock;
+	static sem_t	*dead_lock;
 
 	forks = sem_open(SEM_FORK, O_CREAT | O_EXCL, 0644, num_philos);
 	print_lock = sem_open(SEM_PRINT, O_CREAT | O_EXCL, 0644, 1);
-	end_lock = sem_open(SEM_END, O_CREAT | O_EXCL, 0644, 1);
+	end_lock = sem_open(SEM_END, O_CREAT | O_EXCL, 00070, 1);
 	philos.forks = forks;
 	philos.print_lock = print_lock;
 	philos.end_lock = end_lock;
 	philos.num_philos = my_atoi(argv[1]);
 	philos.has_first_fork = 0;
 	philos.has_second_fork = 0;
-	get_times(&philos, argc, argv);
-	// end(num_philos, (pthread_mutex_t *)pointer_to(END_LOCK));
+	philos.die_time = my_atoi(argv[2]);
+	philos.eat_time = my_atoi(argv[3]);
+	philos.sleep_time = my_atoi(argv[4]);
+	if (argc == 5)
+		philos.times_to_eat = INT_MAX;
+	else
+		philos.times_to_eat = my_atoi(argv[5]);
 	return (&philos);
 }
