@@ -182,8 +182,6 @@ int	main(int argc, char **argv)
 	start_time();
 	philos = init_philos(my_atoi(argv[1]), argc, argv);
 	sem_wait(philos->end_lock);
-	sem_post(philos->end_lock);
-	sem_wait(philos->end_lock);
 	i = -1;
 	while (++i < my_atoi(argv[1]))
 	{
@@ -193,11 +191,11 @@ int	main(int argc, char **argv)
 			child_process(philos, i);
 			free (pid);
 			sem_close(philos->forks);
-			sem_unlink(SEM_FORK);
+			// sem_unlink(SEM_FORK);
 			sem_close(philos->print_lock);
-			sem_unlink(SEM_PRINT);
+			// sem_unlink(SEM_PRINT);
 			sem_close(philos->end_lock);
-			sem_unlink(SEM_END);
+			// sem_unlink(SEM_END);
 			exit (1);
 		}
 		// else
