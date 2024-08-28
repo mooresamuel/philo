@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:15:12 by samoore           #+#    #+#             */
-/*   Updated: 2024/08/28 13:49:59 by samoore          ###   ########.fr       */
+/*   Updated: 2024/08/28 19:26:40 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ typedef struct s_philos
 	sem_t			*forks;
 	sem_t			*print_lock;
 	sem_t			*end_lock;
-	sem_t			*dead_lock;
 	atomic_int		end;
 	atomic_int		num_philos;
 	atomic_int		philo;

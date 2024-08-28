@@ -1,11 +1,11 @@
-make --dry-run --always-make --keep-going --print-directory
+make --dry-run --keep-going --print-directory
 make: Entering directory '/home/samoore/philo/bonus'
 mkdir -p obj
 gcc -Wall -Wextra -Werror -c forks.c -o obj/forks.o
 mkdir -p obj
 gcc -Wall -Wextra -Werror -c init.c -o obj/init.o
 mkdir -p obj
-gcc -Wall -Wextra -Werror -c philo.c -o obj/philo.o
+gcc -Wall -Wextra -Werror -c philo_bonus.c -o obj/philo_bonus.o
 mkdir -p obj
 gcc -Wall -Wextra -Werror -c statics.c -o obj/statics.o
 mkdir -p obj
@@ -14,6 +14,6 @@ mkdir -p obj
 gcc -Wall -Wextra -Werror -c print.c -o obj/print.o
 mkdir -p obj
 gcc -Wall -Wextra -Werror -c semaphore.c -o obj/semaphore.o
-gcc -Wall -Wextra -Werror -o philosophers obj/forks.o obj/init.o obj/philo.o obj/statics.o obj/time.o obj/print.o obj/semaphore.o -lpthread
+gcc -Wall -Wextra -Werror -o philo_bonus obj/forks.o obj/init.o obj/philo_bonus.o obj/statics.o obj/time.o obj/print.o obj/semaphore.o -lpthread
 make: Leaving directory '/home/samoore/philo/bonus'
  

@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:14:24 by samoore           #+#    #+#             */
-/*   Updated: 2024/08/28 12:36:28 by samoore          ###   ########.fr       */
+/*   Updated: 2024/08/28 19:32:20 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,30 +27,13 @@ int	my_atoi(char *str)
 	return (num);
 }
 
-void	get_times(t_philos *philo, int argc, char **argv)
-{
-	philo->die_time = my_atoi(argv[2]);
-	philo->eat_time = my_atoi(argv[3]);
-	philo->sleep_time = my_atoi(argv[4]);
-	if (argc == 5)
-		philo->times_to_eat = INT_MAX;
-	else
-		philo->times_to_eat = my_atoi(argv[5]);
-}
-
 t_philos	*init_philos(int num_philos, int argc, char **argv)
 {
 	static t_philos	philos;
-	static sem_t	*forks;
-	static sem_t	*print_lock;
-	static sem_t	*end_lock;
 
-	forks = sem_open(SEM_FORK, O_CREAT | O_EXCL, 0644, num_philos);
-	print_lock = sem_open(SEM_PRINT, O_CREAT | O_EXCL, 0644, 1);
-	end_lock = sem_open(SEM_END, O_CREAT | O_EXCL, 00070, 1);
-	philos.forks = forks;
-	philos.print_lock = print_lock;
-	philos.end_lock = end_lock;
+	philos.forks = sem_open(SEM_FORK, O_CREAT | O_EXCL, 0666, num_philos);
+	philos.print_lock = sem_open(SEM_PRINT, O_CREAT | O_EXCL, 0666, 1);
+	philos.end_lock = sem_open(SEM_END, O_CREAT | O_EXCL, 0666, 1);
 	philos.num_philos = my_atoi(argv[1]);
 	philos.has_first_fork = 0;
 	philos.has_second_fork = 0;

@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Wed Aug 28 18:26:33 2024
+# Make data base, printed on Wed Aug 28 19:19:49 2024
 
 # Variables
 
@@ -47,7 +47,7 @@ MAIL = samoore@student.42london.com
 # environment
 XDG_DATA_DIRS = /usr/share/ubuntu:/usr/share/gnome:/usr/local/share:/usr/share:/var/lib/snapd/desktop
 # environment
-OLDPWD = /home/samoore/philo/philo
+OLDPWD = /home/samoore/philo
 # automatic
 ^D = $(patsubst %/,%,$(dir $^))
 # automatic
@@ -91,7 +91,7 @@ MAKEFILE_LIST := Makefile
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_PID = 165542
+VSCODE_PID = 177997
 # environment
 KRB5CCNAME = FILE:/tmp/krb5cc_101194_mGXBrH
 # environment
@@ -143,7 +143,7 @@ DOCKER_HOST = unix:///run/user/101194/docker.sock
 # automatic
 ?F = $(notdir $?)
 # makefile (from 'Makefile', line 15)
-NAME = philosophers
+NAME = philo_bonus
 # environment
 GTK_IM_MODULE = ibus
 # environment
@@ -175,7 +175,7 @@ GTK_MODULES = gail:atk-bridge
 # default
 MAKE_VERSION := 4.3
 # makefile (from 'Makefile', line 13)
-SRC_FILES = forks.c  init.c  philo.c  statics.c time.c print.c semaphore.c
+SRC_FILES = forks.c  init.c  philo_bonus.c  statics.c time.c print.c semaphore.c
 # environment
 _ = /usr/bin/code
 # environment
@@ -227,7 +227,7 @@ XDG_MENU_PREFIX = gnome-
 # environment
 GDMSESSION = ubuntu
 # variable set hash-table stats:
-# Load=108/1024=11%, Rehash=0, Collisions=12/155=8%
+# Load=108/1024=11%, Rehash=0, Collisions=12/151=8%
 
 # Pattern-specific Variable Values
 
@@ -249,43 +249,47 @@ obj/%.o: %.c
 # 1 implicit rules, 0 (0.0%) terminal.
 # Files
 
-obj/time.o: time.c
-#  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'time'
-#  Last modified 2024-08-28 14:19:30.245708241
+philo_bonus: obj/forks.o obj/init.o obj/philo_bonus.o obj/statics.o obj/time.o obj/print.o obj/semaphore.o
+#  Implicit rule search has not been done.
+ 
+#  File does not exist.
 #  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 30):
-	@mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/6=0%
+#  recipe to execute (from 'Makefile', line 27):
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) -lpthread
 
-obj/init.o: init.c
-#  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'init'
-#  Last modified 2024-08-28 14:19:30.19370769
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 30):
-	@mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+# Not a target:
+obj/time.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/philo_bonus.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/init.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2024-08-28 14:19:19.057589666
+#  Last modified 2024-08-28 19:19:47.968730432
 #  File has been updated.
 #  Successfully updated.
 
-obj/print.o: print.c
-#  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'print'
- 
-#  Last modified 2024-08-28 14:19:30.269708495
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 30):
-	@mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+# Not a target:
+obj/print.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 clean:
 #  Phony target (prerequisite of .PHONY).
@@ -296,15 +300,11 @@ clean:
 	$(RM) $(OBJ) 
 	$(RM) -r $(OBJ_DIR)
 
-obj/statics.o: statics.c
-#  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'statics'
-#  Last modified 2024-08-28 14:19:30.229708071
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 30):
-	@mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+# Not a target:
+obj/statics.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 re: fclean all
 #  Phony target (prerequisite of .PHONY).
@@ -312,67 +312,19 @@ re: fclean all
 #  File does not exist.
 #  File has not been updated.
 
-philosophers: obj/forks.o obj/init.o obj/philo.o obj/statics.o obj/time.o obj/print.o obj/semaphore.o
-#  Implicit rule search has not been done.
-#  Implicit/static pattern stem: ''
-#  File does not exist.
-#  File has been updated.
-#  Needs to be updated (-q is set).
-# automatic
-# @ := philosophers
-# automatic
-# * := 
-# automatic
-# < := obj/forks.o
-# automatic
-# + := obj/forks.o obj/init.o obj/philo.o obj/statics.o obj/time.o obj/print.o obj/semaphore.o
-# automatic
-# % := 
-# automatic
-# ^ := obj/forks.o obj/init.o obj/philo.o obj/statics.o obj/time.o obj/print.o obj/semaphore.o
-# automatic
-# ? := obj/forks.o obj/init.o obj/philo.o obj/statics.o obj/time.o obj/print.o obj/semaphore.o
-# automatic
-# | := 
-# variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=2/18=11%
-#  recipe to execute (from 'Makefile', line 27):
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) -lpthread
-
 # Not a target:
 .DEFAULT:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
 
-obj/philo.o: philo.c
-#  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'philo'
-#  Last modified 2024-08-28 14:19:30.213707902
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 30):
-	@mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-obj/semaphore.o: semaphore.c
-#  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'semaphore'
-#  Last modified 2024-08-28 14:19:30.289708707
-#  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 30):
-	@mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
 # Not a target:
-philo.c:
-#  Implicit rule search has been done.
-#  Last modified 2024-08-28 14:19:19.057589666
-#  File has been updated.
-#  Successfully updated.
+obj/semaphore.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
-all: philosophers
+all: philo_bonus
 #  Phony target (prerequisite of .PHONY).
 #  Command line target.
 #  Implicit rule search has not been done.
@@ -380,7 +332,7 @@ all: philosophers
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # variable set hash-table stats:
-# Load=0/32=0%, Rehash=0, Collisions=0/10=0%
+# Load=0/32=0%, Rehash=0, Collisions=0/6=0%
 
 # Not a target:
 forks.c:
@@ -397,40 +349,6 @@ fclean: clean
 #  recipe to execute (from 'Makefile', line 38):
 	$(RM) $(NAME)
 
-# Not a target:
-print.c:
-#  Implicit rule search has been done.
-#  Last modified 2024-08-28 14:19:19.057589666
-#  File has been updated.
-#  Successfully updated.
-
-# Not a target:
-time.c:
-#  Implicit rule search has been done.
-#  Last modified 2024-08-28 14:19:19.057589666
-#  File has been updated.
-#  Successfully updated.
-
-# Not a target:
-init.c:
-#  Implicit rule search has been done.
-#  Last modified 2024-08-28 14:19:19.057589666
-#  File has been updated.
-#  Successfully updated.
-
-# Not a target:
-semaphore.c:
-#  Implicit rule search has been done.
-#  Last modified 2024-08-28 14:19:19.057589666
-#  File has been updated.
-#  Successfully updated.
-
-# Not a target:
-.SUFFIXES:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-
 .PHONY: all clean fclean re
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -439,34 +357,45 @@ semaphore.c:
 obj/forks.o: forks.c
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'forks'
-#  Last modified 2024-08-28 14:19:30.169707436
+#  File does not exist.
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := obj/forks.o
+# automatic
+# * := forks
+# automatic
+# < := forks.c
+# automatic
+# + := forks.c
+# automatic
+# % := 
+# automatic
+# ^ := forks.c
+# automatic
+# ? := forks.c
+# automatic
+# | := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=2/16=12%
 #  recipe to execute (from 'Makefile', line 30):
 	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Not a target:
-statics.c:
-#  Implicit rule search has been done.
-#  Last modified 2024-08-28 14:19:19.057589666
-#  File has been updated.
-#  Successfully updated.
-
 # files hash-table stats:
-# Load=23/1024=2%, Rehash=0, Collisions=14/72=19%
+# Load=17/1024=2%, Rehash=0, Collisions=3/47=6%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 39 / storage = 337 B / avg = 8 B
-# current buf: size = 8162 B / used = 337 B / count = 39 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 33 / storage = 310 B / avg = 9 B
+# current buf: size = 8162 B / used = 310 B / count = 33 / avg = 9 B
 
-# strcache performance: lookups = 73 / hit rate = 46%
+# strcache performance: lookups = 54 / hit rate = 38%
 # hash-table stats:
-# Load=39/8192=0%, Rehash=0, Collisions=1/73=1%
-# Finished Make data base on Wed Aug 28 18:26:33 2024
+# Load=33/8192=0%, Rehash=0, Collisions=1/54=2%
+# Finished Make data base on Wed Aug 28 19:19:49 2024
 
  

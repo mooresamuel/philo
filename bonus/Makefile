@@ -6,11 +6,11 @@
 #    By: samoore <samoore@student.42london.com>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/28 12:32:14 by samoore           #+#    #+#              #
-#    Updated: 2024/08/28 18:26:40 by samoore          ###   ########.fr        #
+#    Updated: 2024/08/28 19:19:47 by samoore          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRC_FILES = forks.c  init.c  philo.c  statics.c time.c print.c semaphore.c
+SRC_FILES = forks.c  init.c  philo_bonus.c  statics.c time.c print.c semaphore.c
 OBJ_FILES = $(SRC_FILES:.c=.o)
 NAME = philo_bonus
 
