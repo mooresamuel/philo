@@ -6,11 +6,11 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 11:50:50 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/08 21:32:31 by samoore          ###   ########.fr       */
+/*   Updated: 2024/08/28 12:16:24 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <philo.h>
+#include "philo.h"
 
 int	first_fork(int num_philos, int philo)
 {

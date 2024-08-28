@@ -6,11 +6,11 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 17:25:00 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/08 20:58:42 by samoore          ###   ########.fr       */
+/*   Updated: 2024/08/28 12:16:19 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <philo.h>
+#include "philo.h"
 
 pthread_mutex_t	*get_fork_locks(t_type action, int num)
 {

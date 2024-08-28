@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:14:24 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/10 16:33:53 by samoore          ###   ########.fr       */
+/*   Updated: 2024/08/28 12:36:28 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ t_philos	*init_philos(int num_philos, int argc, char **argv)
 	static sem_t	*forks;
 	static sem_t	*print_lock;
 	static sem_t	*end_lock;
-	static sem_t	*dead_lock;
 
 	forks = sem_open(SEM_FORK, O_CREAT | O_EXCL, 0644, num_philos);
 	print_lock = sem_open(SEM_PRINT, O_CREAT | O_EXCL, 0644, 1);

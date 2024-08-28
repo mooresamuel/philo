@@ -6,11 +6,11 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:14:24 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/08 21:51:10 by samoore          ###   ########.fr       */
+/*   Updated: 2024/08/28 12:16:21 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <philo.h>
+#include "philo.h"
 
 void	*pointer_to(t_type type)
 {

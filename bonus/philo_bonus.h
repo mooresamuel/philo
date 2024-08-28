@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   philo_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:15:12 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/12 17:11:04 by samoore          ###   ########.fr       */
+/*   Updated: 2024/08/28 13:49:59 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,16 +56,16 @@ typedef struct s_philos
 	sem_t			*end_lock;
 	sem_t			*dead_lock;
 	atomic_int		end;
-	atomic_int				num_philos;
-	atomic_int				philo;
+	atomic_int		num_philos;
+	atomic_int		philo;
 	atomic_int		wait;
 	int				eat_time;
 	int				sleep_time;
 	int				die_time;
 	atomic_int		times_to_eat;
 	long			start_time;
-	atomic_int				has_first_fork;
-	atomic_int				has_second_fork;
+	atomic_int		has_first_fork;
+	atomic_int		has_second_fork;
 }					t_philos;
 
 typedef struct s_timer_data
@@ -91,3 +91,14 @@ void			return_fork(t_philos *philo);
 int				dead(int num, int *dead, pthread_mutex_t *dead_lock);
 int				end(int num, pthread_mutex_t *end_lock);
 
+//time.c
+long			*start_time(void);
+long			get_time_since_start(void);
+void			*death_timer(void *arg);
+
+//print.c
+int				lock_print(t_philos *philo, t_philo_state state);
+
+//semaphore.c
+void			close_sem(t_philos *philo);
+void			unlink_sem(void);

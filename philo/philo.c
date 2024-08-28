@@ -6,16 +6,16 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 18:18:19 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/08 21:48:27 by samoore          ###   ########.fr       */
+/*   Updated: 2024/08/28 12:16:41 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <philo.h>
+#include "philo.h"
 
 long	*start_time(void)
 {
-	static long	start_time = 0;
-	struct timeval		time;
+	struct timeval	time;
+	static long		start_time = 0;
 
 	if (!start_time)
 	{
@@ -85,13 +85,9 @@ void	*death_timer(void *arg)
 		return (NULL);
 	}
 	pthread_mutex_unlock(data->struct_lock);
-		end(-1, data->end_lock);
+	end(-1, data->end_lock);
 	if (!dead(0, data->dead_lock))
-	{
-
-		
 		lock_print(data->philo, data->dead_lock, data->print_lock, DIED);
-	}
 	return (NULL);
 }
 
@@ -158,8 +154,6 @@ void	*new_philosopher(void *arg)
 
 	philo = arg;
 	set_timer_data(&data, philo);
-	// while (!*(philo->ready))
-	// 	usleep(500);
 	philo->start_time = *start_time();
 	pthread_create(&timer, NULL, &death_timer, (void *)&data);
 	pthread_detach(timer);
@@ -173,10 +167,7 @@ void	*new_philosopher(void *arg)
 		pthread_mutex_unlock(&philo->fork_locks[philo->second_fork]);
 	end(-1, philo->end_lock);
 	while (end(0, philo->end_lock))
-	{
-		// printf("end %d\n", end(0, philo->end_lock));
 		usleep(1000);
-	}
 	return (NULL);
 }
 
