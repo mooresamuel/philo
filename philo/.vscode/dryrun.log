@@ -1,0 +1,17 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/samoore/philo/philo'
+mkdir -p ./obj/
+gcc -Wall -Wextra -Werror -g -lpthread -c forks.c -o obj/forks.o
+mkdir -p ./obj/
+gcc -Wall -Wextra -Werror -g -lpthread -c init.c -o obj/init.o
+mkdir -p ./obj/
+gcc -Wall -Wextra -Werror -g -lpthread -c locks.c -o obj/locks.o
+mkdir -p ./obj/
+gcc -Wall -Wextra -Werror -g -lpthread -c philo.c -o obj/philo.o
+mkdir -p ./obj/
+gcc -Wall -Wextra -Werror -g -lpthread -c statics.c -o obj/statics.o
+mkdir -p ./obj/
+gcc -Wall -Wextra -Werror -g -lpthread -c time.c -o obj/time.o
+gcc -Wall -Wextra -Werror -g -lpthread ./obj/forks.o ./obj/init.o ./obj/locks.o ./obj/philo.o ./obj/statics.o ./obj/time.o -o philo
+make: Leaving directory '/home/samoore/philo/philo'
+ 

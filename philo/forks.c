@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 11:50:50 by samoore           #+#    #+#             */
-/*   Updated: 2024/08/28 14:43:10 by samoore          ###   ########.fr       */
+/*   Updated: 2024/08/28 18:28:08 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ void	return_fork(t_philos *philo, int fork)
 int	take_fork(t_philos *philo, int fork)
 {
 	pthread_mutex_t	*lock;
-	int				state;
 
 	pthread_mutex_lock(philo->struct_lock);
 	if (fork == philo->first_fork)
