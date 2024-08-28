@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:14:24 by samoore           #+#    #+#             */
-/*   Updated: 2024/08/28 12:16:21 by samoore          ###   ########.fr       */
+/*   Updated: 2024/08/28 14:46:23 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,20 @@ void	get_times(t_philos *philo, int argc, char **argv)
 		philo->times_to_eat = my_atoi(argv[5]);
 }
 
+void	fill_values(t_philos *philos, int i, int num_philos)
+{
+	philos[i].fork_locks = get_fork_locks(RETURN, 0);
+	philos[i].print_lock = (pthread_mutex_t *)pointer_to(PRINT_LOCK);
+	philos[i].dead_lock = (pthread_mutex_t *)pointer_to(DEAD_LOCK);
+	philos[i].end_lock = (pthread_mutex_t *)pointer_to(END_LOCK);
+	philos[i].struct_lock = get_struct_lock(RETURN, i);
+	philos[i].philo = i;
+	philos[i].first_fork = first_fork(num_philos, i);
+	philos[i].second_fork = second_fork(num_philos, i);
+	philos[i].has_first_fork = 0;
+	philos[i].has_second_fork = 0;
+}
+
 t_philos	*init_philos(int num_philos, int argc,
 						char **argv, int *start)
 {
@@ -73,17 +87,8 @@ t_philos	*init_philos(int num_philos, int argc,
 	while (++i < num_philos)
 	{
 		philos[i].ready = start;
-		philos[i].fork_locks = get_fork_locks(RETURN, 0);
-		philos[i].print_lock = (pthread_mutex_t *)pointer_to(PRINT_LOCK);
-		philos[i].dead_lock = (pthread_mutex_t *)pointer_to(DEAD_LOCK);
-		philos[i].end_lock = (pthread_mutex_t *)pointer_to(END_LOCK);
-		philos[i].struct_lock = get_struct_lock(RETURN, i);
-		philos[i].philo = i;
+		fill_values(philos, i, num_philos);
 		philos[i].num_philos = my_atoi(argv[1]);
-		philos[i].first_fork = first_fork(num_philos, i);
-		philos[i].second_fork = second_fork(num_philos, i);
-		philos[i].has_first_fork = 0;
-		philos[i].has_second_fork = 0;
 		get_times(&philos[i], argc, argv);
 	}
 	end(num_philos, (pthread_mutex_t *)pointer_to(END_LOCK));

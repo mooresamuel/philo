@@ -5,33 +5,32 @@
 #                                                     +:+ +:+         +:+      #
 #    By: samoore <samoore@student.42london.com>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/08/28 12:32:14 by samoore           #+#    #+#              #
-#    Updated: 2024/08/28 18:26:40 by samoore          ###   ########.fr        #
+#    Created: 2024/08/28 18:20:46 by samoore           #+#    #+#              #
+#    Updated: 2024/08/28 18:26:04 by samoore          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRC_FILES = forks.c  init.c  philo.c  statics.c time.c print.c semaphore.c
+SRC_FILES = forks.c  init.c  locks.c  philo.c statics.c  time.c
 OBJ_FILES = $(SRC_FILES:.c=.o)
-NAME = philo_bonus
+OBJ_DIR = ./obj/
+OBJ = $(addprefix $(OBJ_DIR), $(OBJ_FILES))
+NAME = philo
 
-OBJ_DIR = obj
-
-OBJ = $(addprefix $(OBJ_DIR)/, $(OBJ_FILES))
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
 RM = rm -f
+CFLAGS = -Wall -Wextra -Werror -g -lpthread
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) -lpthread
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-$(OBJ_DIR)/%.o: %.c
-	@mkdir -p $(OBJ_DIR)
+$(OBJ): $(OBJ_DIR)%.o: %.c
+	mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	$(RM) $(OBJ) 
+	$(RM) $(OBJ)
 	$(RM) -r $(OBJ_DIR)
 
 fclean: clean

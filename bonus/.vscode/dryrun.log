@@ -1,6 +1,19 @@
 make --dry-run --always-make --keep-going --print-directory
 make: Entering directory '/home/samoore/philo/bonus'
+mkdir -p obj
+gcc -Wall -Wextra -Werror -c forks.c -o obj/forks.o
+mkdir -p obj
+gcc -Wall -Wextra -Werror -c init.c -o obj/init.o
+mkdir -p obj
+gcc -Wall -Wextra -Werror -c philo.c -o obj/philo.o
+mkdir -p obj
+gcc -Wall -Wextra -Werror -c statics.c -o obj/statics.o
+mkdir -p obj
+gcc -Wall -Wextra -Werror -c time.c -o obj/time.o
+mkdir -p obj
+gcc -Wall -Wextra -Werror -c print.c -o obj/print.o
+mkdir -p obj
+gcc -Wall -Wextra -Werror -c semaphore.c -o obj/semaphore.o
+gcc -Wall -Wextra -Werror -o philosophers obj/forks.o obj/init.o obj/philo.o obj/statics.o obj/time.o obj/print.o obj/semaphore.o -lpthread
 make: Leaving directory '/home/samoore/philo/bonus'
  
-make: *** No targets specified and no makefile found.  Stop.
-

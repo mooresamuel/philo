@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:15:12 by samoore           #+#    #+#             */
-/*   Updated: 2024/07/08 20:54:35 by samoore          ###   ########.fr       */
+/*   Updated: 2024/08/28 15:20:39 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,14 +46,14 @@ typedef struct s_philos
 	pthread_mutex_t	*dead_lock;
 	pthread_mutex_t	*end_lock;
 	pthread_mutex_t	*fork_locks;
-	int		*ready;
+	int				*ready;
 	int				*forks;
 	int				philo;
 	int				num_philos;
 	int				eat_time;
 	int				sleep_time;
 	int				die_time;
-	int		times_to_eat;
+	int				times_to_eat;
 	long			start_time;
 	int				first_fork;
 	int				second_fork;
@@ -70,7 +70,7 @@ typedef struct s_thread_data
 	pthread_mutex_t	*fork_locks;
 	int				philo;
 	int				die_time;
-	int		*times_to_eat;
+	int				*times_to_eat;
 	int				old_times_to_eat;
 	long			start_time;
 	int				first_fork;
@@ -102,4 +102,11 @@ void			add_locks(t_philos *philos, char **argv);
 //locks.c
 pthread_mutex_t	*get_fork_locks(t_type action, int num);
 pthread_mutex_t	*get_struct_lock(t_type action, int philo);
+void			lock_print(int philo, pthread_mutex_t *dead_lock,
+					pthread_mutex_t *print_lock, t_philo_state state);
 
+//time.c
+long			*start_time(void);
+long			get_time_since_start(int silent);
+void			set_timer_data(t_thread_data *data, t_philos *philo);
+void			*death_timer(void *arg);

@@ -6,10 +6,12 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Wed Jul 10 15:35:45 2024
+# Make data base, printed on Wed Aug 28 18:26:33 2024
 
 # Variables
 
+# makefile (from 'Makefile', line 19)
+OBJ = $(addprefix $(OBJ_DIR)/, $(OBJ_FILES))
 # environment
 GDK_BACKEND = x11
 # environment
@@ -30,6 +32,8 @@ MAKE_COMMAND := make
 QT_ACCESSIBILITY = 1
 # automatic
 @D = $(patsubst %/,%,$(dir $@))
+# makefile (from 'Makefile', line 17)
+OBJ_DIR = obj
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # default
@@ -49,9 +53,9 @@ OLDPWD = /home/samoore/philo/philo
 # automatic
 %F = $(notdir $%)
 # environment
-VSCODE_CODE_CACHE_PATH = /home/samoore/.config/Code/CachedData/1e790d77f81672c49be070e04474901747115651
+VSCODE_CODE_CACHE_PATH = /home/samoore/.config/Code/CachedData/fee1edb8d6d72a0ddff41e5f71a671c23ed924b9
 # environment
-XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session8
+XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session3
 # environment
 LANG = C
 # environment
@@ -61,13 +65,13 @@ XAUTHORITY = /home/samoore/.Xauthority
 # default
 .INCLUDE_DIRS = /usr/local/include /usr/include /usr/include
 # environment
-GNOME_TERMINAL_SERVICE = :1.92
+GNOME_TERMINAL_SERVICE = :1.79
 # makefile
 MAKEFLAGS = pqrR
 # makefile
 CURDIR := /home/samoore/philo/bonus
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
 # environment
@@ -82,20 +86,20 @@ XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 +D = $(patsubst %/,%,$(dir $+))
 # environment
 XDG_SESSION_DESKTOP = ubuntu
-# makefile
-MAKEFILE_LIST := 
+# makefile (from 'Makefile', line 1)
+MAKEFILE_LIST := Makefile
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_PID = 1995049
+VSCODE_PID = 165542
 # environment
-KRB5CCNAME = FILE:/tmp/krb5cc_101194_aOsvGx
+KRB5CCNAME = FILE:/tmp/krb5cc_101194_mGXBrH
 # environment
 XDG_SESSION_TYPE = x11
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # environment
-SESSION_MANAGER = local/c2r6s7.42london.com:@/tmp/.ICE-unix/1991147,unix/c2r6s7.42london.com:/tmp/.ICE-unix/1991147
+SESSION_MANAGER = local/c2r6s7.42london.com:@/tmp/.ICE-unix/140018,unix/c2r6s7.42london.com:/tmp/.ICE-unix/140018
 # automatic
 *F = $(notdir $*)
 # environment
@@ -105,7 +109,7 @@ DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/101194/bus
 # automatic
 <D = $(patsubst %/,%,$(dir $<))
 # environment
-VSCODE_NLS_CONFIG = {"locale":"en-us","osLocale":"en","availableLanguages":{},"_languagePackSupport":true}
+VSCODE_NLS_CONFIG = {"userLocale":"en-us","osLocale":"en","resolvedLanguage":"en","defaultMessagesFile":"/usr/share/code/resources/app/out/nls.messages.json","locale":"en","availableLanguages":{}}
 # default
 MAKE_HOST := x86_64-pc-linux-gnu
 # environment
@@ -119,7 +123,7 @@ XMODIFIERS = @im=ibus
 # environment
 SHLVL = 1
 # environment
-GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/ca80c30c_bf0f_4b2b_83e8_400fbc2d9ffc
+GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/8cf02c33_ecfe_4e99_a14c_d9a34cdd6997
 # environment
 MAKELEVEL := 0
 # default
@@ -132,10 +136,14 @@ MAKEFILES :=
 LANGUAGE = en
 # automatic
 ^F = $(notdir $^)
+# makefile (from 'Makefile', line 14)
+OBJ_FILES = $(SRC_FILES:.c=.o)
 # environment
 DOCKER_HOST = unix:///run/user/101194/docker.sock
 # automatic
 ?F = $(notdir $?)
+# makefile (from 'Makefile', line 15)
+NAME = philosophers
 # environment
 GTK_IM_MODULE = ibus
 # environment
@@ -153,9 +161,11 @@ GNUMAKEFLAGS :=
 # environment
 LOGNAME = samoore
 # makefile
-.DEFAULT_GOAL := 
+.DEFAULT_GOAL := all
 # environment
-SYSTEMD_EXEC_PID = 1991167
+SYSTEMD_EXEC_PID = 140544
+# makefile (from 'Makefile', line 22)
+RM = rm -f
 # environment
 DISPLAY = :0
 # environment
@@ -164,10 +174,14 @@ USER = samoore
 GTK_MODULES = gail:atk-bridge
 # default
 MAKE_VERSION := 4.3
+# makefile (from 'Makefile', line 13)
+SRC_FILES = forks.c  init.c  philo.c  statics.c time.c print.c semaphore.c
 # environment
 _ = /usr/bin/code
 # environment
 XDG_RUNTIME_DIR = /run/user/101194
+# makefile (from 'Makefile', line 21)
+CFLAGS = -Wall -Wextra -Werror
 # environment
 GPG_AGENT_INFO = /run/user/101194/gnupg/S.gpg-agent:0:1
 # environment
@@ -183,7 +197,7 @@ QT_IM_MODULE = ibus
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-VSCODE_IPC_HOOK = /run/user/101194/vscode-b09c1acb-1.87-main.sock
+VSCODE_IPC_HOOK = /run/user/101194/vscode-b09c1acb-1.92-main.sock
 # environment
 TERM = xterm-256color
 # environment
@@ -206,12 +220,14 @@ VTE_VERSION = 6800
 XDG_GREETER_DATA_DIR = /var/lib/lightdm-data/samoore
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink load
+# makefile (from 'Makefile', line 20)
+CC = gcc
 # environment
 XDG_MENU_PREFIX = gnome-
 # environment
 GDMSESSION = ubuntu
 # variable set hash-table stats:
-# Load=100/1024=10%, Rehash=0, Collisions=11/127=9%
+# Load=108/1024=11%, Rehash=0, Collisions=12/155=8%
 
 # Pattern-specific Variable Values
 
@@ -219,22 +235,109 @@ GDMSESSION = ubuntu
 
 # Directories
 
-# . (device 2048, inode 4330934): 10 files, no impossibilities.
+# . (device 2048, inode 4330934): 13 files, no impossibilities.
 
-# 10 files, no impossibilities in 1 directories.
+# 13 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
-# No implicit rules.
+obj/%.o: %.c
+#  recipe to execute (from 'Makefile', line 30):
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
+# 1 implicit rules, 0 (0.0%) terminal.
 # Files
+
+obj/time.o: time.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'time'
+#  Last modified 2024-08-28 14:19:30.245708241
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 30):
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+obj/init.o: init.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'init'
+#  Last modified 2024-08-28 14:19:30.19370769
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 30):
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
+#  Last modified 2024-08-28 14:19:19.057589666
+#  File has been updated.
+#  Successfully updated.
+
+obj/print.o: print.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'print'
+ 
+#  Last modified 2024-08-28 14:19:30.269708495
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 30):
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 34):
+	$(RM) $(OBJ) 
+	$(RM) -r $(OBJ_DIR)
+
+obj/statics.o: statics.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'statics'
+#  Last modified 2024-08-28 14:19:30.229708071
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 30):
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+re: fclean all
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+philosophers: obj/forks.o obj/init.o obj/philo.o obj/statics.o obj/time.o obj/print.o obj/semaphore.o
+#  Implicit rule search has not been done.
+#  Implicit/static pattern stem: ''
 #  File does not exist.
 #  File has been updated.
-#  Failed to be updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := philosophers
+# automatic
+# * := 
+# automatic
+# < := obj/forks.o
+# automatic
+# + := obj/forks.o obj/init.o obj/philo.o obj/statics.o obj/time.o obj/print.o obj/semaphore.o
+# automatic
+# % := 
+# automatic
+# ^ := obj/forks.o obj/init.o obj/philo.o obj/statics.o obj/time.o obj/print.o obj/semaphore.o
+# automatic
+# ? := obj/forks.o obj/init.o obj/philo.o obj/statics.o obj/time.o obj/print.o obj/semaphore.o
+# automatic
+# | := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=2/18=11%
+#  recipe to execute (from 'Makefile', line 27):
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) -lpthread
 
 # Not a target:
 .DEFAULT:
@@ -242,43 +345,128 @@ Makefile:
 #  Modification time never checked.
 #  File has not been updated.
 
-# Not a target:
-all:
-#  Command line target.
+obj/philo.o: philo.c
 #  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'philo'
+#  Last modified 2024-08-28 14:19:30.213707902
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 30):
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+obj/semaphore.o: semaphore.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'semaphore'
+#  Last modified 2024-08-28 14:19:30.289708707
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 30):
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Not a target:
+philo.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-08-28 14:19:19.057589666
+#  File has been updated.
+#  Successfully updated.
+
+all: philosophers
+#  Phony target (prerequisite of .PHONY).
+#  Command line target.
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/10=0%
+
+# Not a target:
+forks.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-08-28 14:19:19.057589666
+#  File has been updated.
+#  Successfully updated.
+
+fclean: clean
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
+#  recipe to execute (from 'Makefile', line 38):
+	$(RM) $(NAME)
 
 # Not a target:
-makefile:
+print.c:
 #  Implicit rule search has been done.
-#  File does not exist.
+#  Last modified 2024-08-28 14:19:19.057589666
 #  File has been updated.
-#  Failed to be updated.
+#  Successfully updated.
 
 # Not a target:
-GNUmakefile:
+time.c:
 #  Implicit rule search has been done.
-#  File does not exist.
+#  Last modified 2024-08-28 14:19:19.057589666
 #  File has been updated.
-#  Failed to be updated.
+#  Successfully updated.
+
+# Not a target:
+init.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-08-28 14:19:19.057589666
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+semaphore.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-08-28 14:19:19.057589666
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+.PHONY: all clean fclean re
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+obj/forks.o: forks.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'forks'
+#  Last modified 2024-08-28 14:19:30.169707436
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 30):
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Not a target:
+statics.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-08-28 14:19:19.057589666
+#  File has been updated.
+#  Successfully updated.
 
 # files hash-table stats:
-# Load=6/1024=1%, Rehash=0, Collisions=0/15=0%
+# Load=23/1024=2%, Rehash=0, Collisions=14/72=19%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 18 / storage = 153 B / avg = 8 B
-# current buf: size = 8162 B / used = 153 B / count = 18 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 39 / storage = 337 B / avg = 8 B
+# current buf: size = 8162 B / used = 337 B / count = 39 / avg = 8 B
 
-# strcache performance: lookups = 21 / hit rate = 14%
+# strcache performance: lookups = 73 / hit rate = 46%
 # hash-table stats:
-# Load=18/8192=0%, Rehash=0, Collisions=0/21=0%
-# Finished Make data base on Wed Jul 10 15:35:45 2024
+# Load=39/8192=0%, Rehash=0, Collisions=1/73=1%
+# Finished Make data base on Wed Aug 28 18:26:33 2024
 
  
-make: *** No rule to make target 'all'.  Stop.
-
