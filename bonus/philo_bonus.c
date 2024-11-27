@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 18:18:19 by samoore           #+#    #+#             */
-/*   Updated: 2024/08/28 19:32:09 by samoore          ###   ########.fr       */
+/*   Updated: 2024/11/27 14:06:21 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,17 +32,6 @@ void	philo_main_loop(t_philos *philo)
 	usleep(philo->sleep_time * 1000);
 	lock_print(philo, THINKING);
 	usleep(500);
-}
-
-void	*end_checker(void *arg)
-{
-	t_philos	*philo;
-
-	philo = arg;
-	sem_wait(philo->end_lock);
-	philo->end = 1;
-	sem_post(philo->end_lock);
-	return (NULL);
 }
 
 void	child_process(t_philos *philo, int num)
@@ -81,6 +70,24 @@ int	create_philosopher(t_philos *philos, int i, pid_t *pid_to_free)
 	return (pid);
 }
 
+int	check_input(int argc, char **argv)
+{
+	int	i;
+
+	i = 0;
+	if (argc != 5 && argc != 6)
+		return (printf("Invalid number of arguments!\n"), 1);
+	while (++i < argc)
+	{
+		if (my_atoi(argv[i]) < 0)
+		{
+			printf("Invalid argument: %s\n", argv[i]);
+			return (1);
+		}
+	}
+	return (0);
+}
+
 int	main(int argc, char **argv)
 {
 	t_philos	*philos;
@@ -89,8 +96,8 @@ int	main(int argc, char **argv)
 
 	i = -1;
 	unlink_sem();
-	if (argc != 5 && argc != 6)
-		return (printf("Invalid number of arguments!\n"), 1);
+	if (check_input(argc, argv))
+		return (1);
 	pid = malloc(sizeof(pid_t) * my_atoi(argv[1]));
 	start_time();
 	philos = init_philos(my_atoi(argv[1]), argc, argv);

@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:14:24 by samoore           #+#    #+#             */
-/*   Updated: 2024/08/28 14:46:23 by samoore          ###   ########.fr       */
+/*   Updated: 2024/11/27 13:48:09 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	my_atoi(char *str)
 	while (*str)
 	{
 		if (*str < '0' || *str > '9')
-			return (num);
+			return (-1);
 		num *= 10;
 		num += *str++ - '0';
 	}

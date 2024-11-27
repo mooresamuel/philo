@@ -6,18 +6,11 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 18:18:19 by samoore           #+#    #+#             */
-/*   Updated: 2024/08/28 15:20:57 by samoore          ###   ########.fr       */
+/*   Updated: 2024/11/27 13:55:51 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	decrement_eat_times(pthread_mutex_t *lock, int *num)
-{
-	pthread_mutex_lock(lock);
-	(*num)--;
-	pthread_mutex_unlock(lock);
-}
 
 void	sleep_and_think(t_philos *philo)
 {
@@ -80,6 +73,24 @@ void	*new_philosopher(void *arg)
 	return (NULL);
 }
 
+int	check_input(int argc, char **argv)
+{
+	int	i;
+
+	i = 0;
+	if (argc != 5 && argc != 6)
+		return (printf("Invalid number of arguments!\n"), 1);
+	while (++i < argc)
+	{
+		if (my_atoi(argv[i]) < 0)
+		{
+			printf("Invalid argument: %s\n", argv[i]);
+			return (1);
+		}
+	}
+	return (0);
+}
+
 int	main(int argc, char **argv)
 {
 	t_philos	*philos;
@@ -89,8 +100,8 @@ int	main(int argc, char **argv)
 
 	i = -1;
 	start = 0;
-	if (argc != 5 && argc != 6)
-		return (printf("Invalid number of arguments!\n"), 1);
+	if (check_input(argc, argv))
+		return (1);
 	tid = malloc(sizeof(pthread_t) * my_atoi(argv[1]));
 	start_time();
 	philos = init_philos(my_atoi(argv[1]), argc, argv, &start);

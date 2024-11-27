@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 13:09:04 by samoore           #+#    #+#             */
-/*   Updated: 2024/08/28 13:23:05 by samoore          ###   ########.fr       */
+/*   Updated: 2024/11/27 14:06:42 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,5 +51,16 @@ void	*death_timer(void *arg)
 	{
 		lock_print(philo, DIED);
 	}
+	return (NULL);
+}
+
+void	*end_checker(void *arg)
+{
+	t_philos	*philo;
+
+	philo = arg;
+	sem_wait(philo->end_lock);
+	philo->end = 1;
+	sem_post(philo->end_lock);
 	return (NULL);
 }

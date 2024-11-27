@@ -6,7 +6,7 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 13:15:12 by samoore           #+#    #+#             */
-/*   Updated: 2024/08/28 15:20:39 by samoore          ###   ########.fr       */
+/*   Updated: 2024/11/27 13:56:05 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ t_philos		*init_philos(int num_philos, int argc,
 					char **argv, int *start);
 int				my_atoi(char *str);
 void			*pointer_to(t_type type);
+int				my_atoi(char *str);
 
 //forks.c
 // pthread_mutex_t	*get_forks(int num_philos);
@@ -110,3 +111,4 @@ long			*start_time(void);
 long			get_time_since_start(int silent);
 void			set_timer_data(t_thread_data *data, t_philos *philo);
 void			*death_timer(void *arg);
+void			decrement_eat_times(pthread_mutex_t *lock, int *num);

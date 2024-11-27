@@ -6,11 +6,18 @@
 /*   By: samoore <samoore@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 14:48:41 by samoore           #+#    #+#             */
-/*   Updated: 2024/08/28 15:20:45 by samoore          ###   ########.fr       */
+/*   Updated: 2024/11/27 13:56:19 by samoore          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	decrement_eat_times(pthread_mutex_t *lock, int *num)
+{
+	pthread_mutex_lock(lock);
+	(*num)--;
+	pthread_mutex_unlock(lock);
+}
 
 long	*start_time(void)
 {
